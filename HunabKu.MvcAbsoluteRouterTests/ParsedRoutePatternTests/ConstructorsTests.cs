@@ -19,5 +19,13 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests
 			Executing.This(() => ParsedRoutePattern.Parse("")).Should().Throw<ArgumentOutOfRangeException>();
 			Executing.This(() => ParsedRoutePattern.Parse("   ")).Should().Throw<ArgumentOutOfRangeException>();
 		}
+
+		[Test]
+		public void WhenValidPatternThenAssignOrifinal()
+		{
+			var parsed = ParsedRoutePattern.Parse("{area}");
+			string actual = parsed.OriginalPattern;
+			actual.Should().Be("{area}");
+		}
 	}
 }
