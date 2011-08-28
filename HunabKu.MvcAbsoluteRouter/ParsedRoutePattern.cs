@@ -16,9 +16,12 @@ namespace HunabKu.MvcAbsoluteRouter
 				throw new ArgumentOutOfRangeException("pattern","The pattern is empty.");
 			}
 			OriginalPattern = pattern;
+			LocalPattern = pattern;
 		}
 
 		public string OriginalPattern { get; private set; }
+
+		public string LocalPattern { get; private set; }
 
 		public static ParsedRoutePattern Parse(string pattern)
 		{

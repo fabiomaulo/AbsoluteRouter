@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ParsedRoutePatternTests\ConstructorsTests.cs" />
+    <Compile Include="ParsedRoutePatternTests\LocalPatternTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
