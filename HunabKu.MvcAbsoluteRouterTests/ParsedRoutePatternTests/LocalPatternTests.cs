@@ -13,5 +13,29 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests
 			string actual = parsed.LocalPattern;
 			actual.Should().Be("{area}");
 		}
+
+		[Test]
+		public void WhenPatternContainsDomainThenAssignLocalPattern()
+		{
+			var parsed = ParsedRoutePattern.Parse("http://acme.com/{area}");
+			string actual = parsed.LocalPattern;
+			actual.Should().Be("{area}");
+		}
+
+		[Test]
+		public void WhenPatternContainsQueryThenAssignLocalPattern()
+		{
+			var parsed = ParsedRoutePattern.Parse("{area}?a=5&b=6");
+			string actual = parsed.LocalPattern;
+			actual.Should().Be("{area}");
+		}
+
+		[Test]
+		public void WhenPatternContainsDomainAndQueryThenAssignLocalPattern()
+		{
+			var parsed = ParsedRoutePattern.Parse("http://acme.com/{area}?a=5&b=6");
+			string actual = parsed.LocalPattern;
+			actual.Should().Be("{area}");
+		}
 	}
 }
