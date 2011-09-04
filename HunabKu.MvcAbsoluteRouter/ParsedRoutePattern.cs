@@ -29,6 +29,8 @@ namespace HunabKu.MvcAbsoluteRouter
 
 		public string LocalPattern { get; private set; }
 
+		public string DnsSafeHostPattern { get; private set; }
+
 		public static ParsedRoutePattern Parse(string pattern)
 		{
 			return new ParsedRoutePattern(pattern);
