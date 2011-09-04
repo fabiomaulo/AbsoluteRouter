@@ -23,6 +23,7 @@ namespace HunabKu.MvcAbsoluteRouter
 		public string SchemePattern { get; private set; }
 		public string HostPattern { get; private set; }
 		public string LocalPattern { get; private set; }
+		public string QueryPattern { get; private set; }
 
 		public static ParsedRoutePattern Parse(string pattern)
 		{
@@ -48,6 +49,7 @@ namespace HunabKu.MvcAbsoluteRouter
 			string pathAndQuery = hasPath ? urlCleanedFromScheme.Substring(indexOfFirstSlash + 1) : (hasDns ? string.Empty : urlCleanedFromScheme);
 			int indexOfQueryStringStart = pathAndQuery.IndexOf('?');
 			LocalPattern = indexOfQueryStringStart > 0 ? pathAndQuery.Substring(0, indexOfQueryStringStart) : pathAndQuery;
+			QueryPattern = indexOfQueryStringStart > 0 ? pathAndQuery.Substring(indexOfQueryStringStart + 1) : string.Empty;
 		}
 	}
 }
