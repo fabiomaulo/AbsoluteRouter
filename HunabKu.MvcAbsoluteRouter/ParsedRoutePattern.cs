@@ -5,7 +5,7 @@ namespace HunabKu.MvcAbsoluteRouter
 {
 	public class ParsedRoutePattern
 	{
-		private static readonly string[] SchemaAtStart = {
+		private static readonly string[] SchemeAtStart = {
 		                                                 	Uri.UriSchemeHttp + Uri.SchemeDelimiter,
 		                                                 	Uri.UriSchemeHttps + Uri.SchemeDelimiter
 		                                                 };
@@ -38,19 +38,19 @@ namespace HunabKu.MvcAbsoluteRouter
 
 		private void ExtractPatterns(string urlPattern)
 		{
-			string containedSchema = SchemaAtStart.FirstOrDefault(x => urlPattern.StartsWith(x));
-			string urlCleanedFromSchema = urlPattern;
-			if (containedSchema != null)
+			string containedScheme = SchemeAtStart.FirstOrDefault(x => urlPattern.StartsWith(x));
+			string urlCleanedFromScheme = urlPattern;
+			if (containedScheme != null)
 			{
-				urlCleanedFromSchema = urlPattern.Substring(containedSchema.Length);
+				urlCleanedFromScheme = urlPattern.Substring(containedScheme.Length);
 			}
-			int indexOfFirstSlash = urlCleanedFromSchema.IndexOf('/');
+			int indexOfFirstSlash = urlCleanedFromScheme.IndexOf('/');
 			bool hasPath = indexOfFirstSlash >= 0;
-			bool hasDns = urlCleanedFromSchema.IndexOf('.') >= 0;
+			bool hasDns = urlCleanedFromScheme.IndexOf('.') >= 0;
 
-			DnsSafeHostPattern = hasPath ? urlCleanedFromSchema.Substring(0, indexOfFirstSlash) : (hasDns ? urlCleanedFromSchema : string.Empty);
+			DnsSafeHostPattern = hasPath ? urlCleanedFromScheme.Substring(0, indexOfFirstSlash) : (hasDns ? urlCleanedFromScheme : string.Empty);
 
-			string pathAndQuery = hasPath ? urlCleanedFromSchema.Substring(indexOfFirstSlash + 1) : (hasDns ? string.Empty : urlCleanedFromSchema);
+			string pathAndQuery = hasPath ? urlCleanedFromScheme.Substring(indexOfFirstSlash + 1) : (hasDns ? string.Empty : urlCleanedFromScheme);
 			int indexOfQueryStringStart = pathAndQuery.IndexOf('?');
 			LocalPattern = indexOfQueryStringStart > 0 ? pathAndQuery.Substring(0, indexOfQueryStringStart) : pathAndQuery;
 		}
