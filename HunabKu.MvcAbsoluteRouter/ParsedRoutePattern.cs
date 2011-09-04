@@ -5,11 +5,6 @@ namespace HunabKu.MvcAbsoluteRouter
 {
 	public class ParsedRoutePattern
 	{
-		private static readonly string[] SchemeAtStart = {
-		                                                 	Uri.UriSchemeHttp + Uri.SchemeDelimiter,
-		                                                 	Uri.UriSchemeHttps + Uri.SchemeDelimiter
-		                                                 };
-
 		private ParsedRoutePattern(string pattern)
 		{
 			if (pattern == null)
@@ -31,6 +26,8 @@ namespace HunabKu.MvcAbsoluteRouter
 
 		public string DnsSafeHostPattern { get; private set; }
 
+		public string SchemePattern { get; private set; }
+
 		public static ParsedRoutePattern Parse(string pattern)
 		{
 			return new ParsedRoutePattern(pattern);
@@ -38,11 +35,13 @@ namespace HunabKu.MvcAbsoluteRouter
 
 		private void ExtractPatterns(string urlPattern)
 		{
-			string containedScheme = SchemeAtStart.FirstOrDefault(x => urlPattern.StartsWith(x));
+			int indexOfSchemeDelimiter = urlPattern.IndexOf(Uri.SchemeDelimiter);
+			SchemePattern = string.Empty;
 			string urlCleanedFromScheme = urlPattern;
-			if (containedScheme != null)
+			if (indexOfSchemeDelimiter >= 0)
 			{
-				urlCleanedFromScheme = urlPattern.Substring(containedScheme.Length);
+				SchemePattern = urlPattern.Substring(0, indexOfSchemeDelimiter);
+				urlCleanedFromScheme = urlPattern.Substring(indexOfSchemeDelimiter + Uri.SchemeDelimiter.Length);
 			}
 			int indexOfFirstSlash = urlCleanedFromScheme.IndexOf('/');
 			bool hasPath = indexOfFirstSlash >= 0;
