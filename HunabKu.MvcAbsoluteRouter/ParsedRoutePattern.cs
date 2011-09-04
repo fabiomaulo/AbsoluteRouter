@@ -21,7 +21,7 @@ namespace HunabKu.MvcAbsoluteRouter
 
 		public string OriginalPattern { get; private set; }
 		public string SchemePattern { get; private set; }
-		public string DnsSafeHostPattern { get; private set; }
+		public string HostPattern { get; private set; }
 		public string LocalPattern { get; private set; }
 
 		public static ParsedRoutePattern Parse(string pattern)
@@ -43,7 +43,7 @@ namespace HunabKu.MvcAbsoluteRouter
 			bool hasPath = indexOfFirstSlash >= 0;
 			bool hasDns = urlCleanedFromScheme.IndexOf('.') >= 0;
 
-			DnsSafeHostPattern = hasPath ? urlCleanedFromScheme.Substring(0, indexOfFirstSlash) : (hasDns ? urlCleanedFromScheme : string.Empty);
+			HostPattern = hasPath ? urlCleanedFromScheme.Substring(0, indexOfFirstSlash) : (hasDns ? urlCleanedFromScheme : string.Empty);
 
 			string pathAndQuery = hasPath ? urlCleanedFromScheme.Substring(indexOfFirstSlash + 1) : (hasDns ? string.Empty : urlCleanedFromScheme);
 			int indexOfQueryStringStart = pathAndQuery.IndexOf('?');
