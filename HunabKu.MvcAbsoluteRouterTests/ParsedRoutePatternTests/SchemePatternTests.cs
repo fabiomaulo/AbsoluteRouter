@@ -36,7 +36,7 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests
 			var parsed = ParsedRoutePattern.Parse("{scheme}://{company}.com/");
 			string actual = parsed.SchemePattern;
 			actual.Should().Be("{scheme}");
-			parsed.DnsSafeHostPattern.Should().Be("{company}.com");
+			parsed.HostPattern.Should().Be("{company}.com");
 		}
 
 		[Test]
@@ -45,7 +45,7 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests
 			var parsed = ParsedRoutePattern.Parse("ftp://{company}.com");
 			string actual = parsed.SchemePattern;
 			actual.Should().Be("ftp");
-			parsed.DnsSafeHostPattern.Should().Be("{company}.com");
+			parsed.HostPattern.Should().Be("{company}.com");
 			parsed.LocalPattern.Should().Be.Empty();
 		}
 

@@ -10,7 +10,7 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests
 		public void WhenPatternIsJustLocalThenEmptyDnsSafeHostPattern()
 		{
 			var parsed = ParsedRoutePattern.Parse("{area}");
-			string actual = parsed.DnsSafeHostPattern;
+			string actual = parsed.HostPattern;
 			actual.Should().Be.Empty();
 		}
 
@@ -18,7 +18,7 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests
 		public void WhenPatternContainsDomainThenAssignDnsSafeHostPattern()
 		{
 			var parsed = ParsedRoutePattern.Parse("http://acme.com/{area}");
-			string actual = parsed.DnsSafeHostPattern;
+			string actual = parsed.HostPattern;
 			actual.Should().Be("acme.com");
 		}
 
@@ -26,7 +26,7 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests
 		public void WhenPatternContainsDomainAndQueryThenAssignDnsSafeHostPattern()
 		{
 			var parsed = ParsedRoutePattern.Parse("http://acme.com/{area}?a=5&b=6");
-			string actual = parsed.DnsSafeHostPattern;
+			string actual = parsed.HostPattern;
 			actual.Should().Be("acme.com");
 		}
 
@@ -34,7 +34,7 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests
 		public void WhenPatternIsSchemaAndDomainThenAssignDnsSafeHostPattern()
 		{
 			var parsed = ParsedRoutePattern.Parse("http://{company}.com/");
-			string actual = parsed.DnsSafeHostPattern;
+			string actual = parsed.HostPattern;
 			actual.Should().Be("{company}.com");
 		}
 
@@ -42,7 +42,7 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests
 		public void WhenPatternIsSchemaAndDomainWithoutEndSlashThenAssignDnsSafeHostPattern()
 		{
 			var parsed = ParsedRoutePattern.Parse("http://{company}.com");
-			string actual = parsed.DnsSafeHostPattern;
+			string actual = parsed.HostPattern;
 			actual.Should().Be("{company}.com");
 		}
 
@@ -50,7 +50,7 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests
 		public void WhenPatternIsJustDomainThenAssignDnsSafeHostPattern()
 		{
 			var parsed = ParsedRoutePattern.Parse("{company}.com");
-			string actual = parsed.DnsSafeHostPattern;
+			string actual = parsed.HostPattern;
 			actual.Should().Be("{company}.com");
 		}
 	}
