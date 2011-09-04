@@ -39,7 +39,7 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests
 		}
 
 		[Test]
-		public void WhenPatternIsSchemaAndDomainWithoutEndSlashThenEmptyLocalPattern()
+		public void WhenPatternIsSchemaAndDomainWithoutEndSlashThenAssignDnsSafeHostPattern()
 		{
 			var parsed = ParsedRoutePattern.Parse("http://{company}.com");
 			string actual = parsed.DnsSafeHostPattern;
@@ -47,7 +47,7 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests
 		}
 
 		[Test]
-		public void WhenPatternIsJustDomainThenEmptyLocalPattern()
+		public void WhenPatternIsJustDomainThenAssignDnsSafeHostPattern()
 		{
 			var parsed = ParsedRoutePattern.Parse("{company}.com");
 			string actual = parsed.DnsSafeHostPattern;
