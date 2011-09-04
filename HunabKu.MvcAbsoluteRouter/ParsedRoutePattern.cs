@@ -22,7 +22,7 @@ namespace HunabKu.MvcAbsoluteRouter
 				throw new ArgumentOutOfRangeException("pattern", "The pattern is empty.");
 			}
 			OriginalPattern = pattern;
-			LocalPattern = ExtractLocalPattern(pattern);
+			ExtractPatterns(pattern);
 		}
 
 		public string OriginalPattern { get; private set; }
@@ -36,7 +36,7 @@ namespace HunabKu.MvcAbsoluteRouter
 			return new ParsedRoutePattern(pattern);
 		}
 
-		private string ExtractLocalPattern(string urlPattern)
+		private void ExtractPatterns(string urlPattern)
 		{
 			string containedSchema = SchemaAtStart.FirstOrDefault(x => urlPattern.StartsWith(x));
 			string urlCleanedFromSchema = urlPattern;
@@ -47,9 +47,12 @@ namespace HunabKu.MvcAbsoluteRouter
 			int indexOfFirstSlash = urlCleanedFromSchema.IndexOf('/');
 			bool hasPath = indexOfFirstSlash >= 0;
 			bool hasDns = urlCleanedFromSchema.IndexOf('.') >= 0;
+
+			DnsSafeHostPattern = hasPath ? urlCleanedFromSchema.Substring(0, indexOfFirstSlash) : (hasDns ? urlCleanedFromSchema : string.Empty);
+
 			string pathAndQuery = hasPath ? urlCleanedFromSchema.Substring(indexOfFirstSlash + 1) : (hasDns ? string.Empty : urlCleanedFromSchema);
 			int indexOfQueryStringStart = pathAndQuery.IndexOf('?');
-			return indexOfQueryStringStart > 0 ? pathAndQuery.Substring(0, indexOfQueryStringStart) : pathAndQuery;
+			LocalPattern = indexOfQueryStringStart > 0 ? pathAndQuery.Substring(0, indexOfQueryStringStart) : pathAndQuery;
 		}
 	}
 }
