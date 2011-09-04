@@ -53,5 +53,21 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests
 			string actual = parsed.HostPattern;
 			actual.Should().Be("{company}.com");
 		}
+
+		[Test]
+		public void WhenPatternIsSchemaAndDomainWithPortThenAssignDnsSafeHostPatternWithoutPort()
+		{
+			var parsed = ParsedRoutePattern.Parse("http://{company}.com:81/");
+			string actual = parsed.HostPattern;
+			actual.Should().Be("{company}.com");
+		}
+
+		[Test]
+		public void WhenPatternIsJustDomainWithPortThenAssignDnsSafeHostPatternWithoutPort()
+		{
+			var parsed = ParsedRoutePattern.Parse("{company}.com:81");
+			string actual = parsed.HostPattern;
+			actual.Should().Be("{company}.com");
+		}
 	}
 }

@@ -44,7 +44,9 @@ namespace HunabKu.MvcAbsoluteRouter
 			bool hasPath = indexOfFirstSlash >= 0;
 			bool hasDns = urlCleanedFromScheme.IndexOf('.') >= 0;
 
-			HostPattern = hasPath ? urlCleanedFromScheme.Substring(0, indexOfFirstSlash) : (hasDns ? urlCleanedFromScheme : string.Empty);
+			string hostAndPort = hasPath ? urlCleanedFromScheme.Substring(0, indexOfFirstSlash) : (hasDns ? urlCleanedFromScheme : string.Empty);
+			int indexOfPortDelimiter = hostAndPort.IndexOf(":");
+			HostPattern = indexOfPortDelimiter > 0 ? hostAndPort.Substring(0, indexOfPortDelimiter) : hostAndPort;
 
 			string pathAndQuery = hasPath ? urlCleanedFromScheme.Substring(indexOfFirstSlash + 1) : (hasDns ? string.Empty : urlCleanedFromScheme);
 			int indexOfQueryStringStart = pathAndQuery.IndexOf('?');
