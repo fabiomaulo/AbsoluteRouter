@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 
 namespace HunabKu.MvcAbsoluteRouter
 {
@@ -21,12 +20,9 @@ namespace HunabKu.MvcAbsoluteRouter
 		}
 
 		public string OriginalPattern { get; private set; }
-
-		public string LocalPattern { get; private set; }
-
-		public string DnsSafeHostPattern { get; private set; }
-
 		public string SchemePattern { get; private set; }
+		public string DnsSafeHostPattern { get; private set; }
+		public string LocalPattern { get; private set; }
 
 		public static ParsedRoutePattern Parse(string pattern)
 		{
