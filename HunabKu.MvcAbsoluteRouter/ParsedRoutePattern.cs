@@ -23,6 +23,7 @@ namespace HunabKu.MvcAbsoluteRouter
 			}
 			OriginalPattern = pattern;
 			ExtractPatterns(pattern);
+			ExtractSegments();
 		}
 
 		public string OriginalPattern { get; private set; }
@@ -30,6 +31,8 @@ namespace HunabKu.MvcAbsoluteRouter
 		public string HostPattern { get; private set; }
 		public string LocalPattern { get; private set; }
 		public string QueryPattern { get; private set; }
+
+		public string SchemeSegment { get; private set; }
 
 		public static ParsedRoutePattern Parse(string pattern)
 		{
@@ -58,6 +61,11 @@ namespace HunabKu.MvcAbsoluteRouter
 			int indexOfQueryStringStart = pathAndQuery.IndexOf(QueryDelimiter);
 			LocalPattern = indexOfQueryStringStart > 0 ? pathAndQuery.Substring(0, indexOfQueryStringStart) : pathAndQuery;
 			QueryPattern = indexOfQueryStringStart > 0 ? pathAndQuery.Substring(indexOfQueryStringStart + 1) : string.Empty;
+		}
+
+		private void ExtractSegments()
+		{
+			SchemeSegment = SchemePattern;
 		}
 	}
 }
