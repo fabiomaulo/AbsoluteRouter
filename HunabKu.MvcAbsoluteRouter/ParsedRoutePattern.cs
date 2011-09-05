@@ -4,6 +4,7 @@ namespace HunabKu.MvcAbsoluteRouter
 {
 	public class ParsedRoutePattern
 	{
+		private static readonly string SchemeDelimiter = Uri.SchemeDelimiter;
 		private const char PathDelimiter = '/';
 		private const char HostSeparator = '.';
 		private const char PortDelimiter = ':';
@@ -37,13 +38,13 @@ namespace HunabKu.MvcAbsoluteRouter
 
 		private void ExtractPatterns(string urlPattern)
 		{
-			int indexOfSchemeDelimiter = urlPattern.IndexOf(Uri.SchemeDelimiter);
+			int indexOfSchemeDelimiter = urlPattern.IndexOf(SchemeDelimiter);
 			SchemePattern = string.Empty;
 			string urlCleanedFromScheme = urlPattern;
 			if (indexOfSchemeDelimiter >= 0)
 			{
 				SchemePattern = urlPattern.Substring(0, indexOfSchemeDelimiter);
-				urlCleanedFromScheme = urlPattern.Substring(indexOfSchemeDelimiter + Uri.SchemeDelimiter.Length);
+				urlCleanedFromScheme = urlPattern.Substring(indexOfSchemeDelimiter + SchemeDelimiter.Length);
 			}
 			int indexOfFirstSlash = urlCleanedFromScheme.IndexOf(PathDelimiter);
 			bool hasPath = indexOfFirstSlash >= 0;
