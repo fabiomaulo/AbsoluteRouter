@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace HunabKu.MvcAbsoluteRouter
 {
@@ -33,6 +35,7 @@ namespace HunabKu.MvcAbsoluteRouter
 		public string QueryPattern { get; private set; }
 
 		public string SchemeSegment { get; private set; }
+		public IEnumerable<string> HostSegments { get; private set; }
 
 		public static ParsedRoutePattern Parse(string pattern)
 		{
@@ -66,6 +69,7 @@ namespace HunabKu.MvcAbsoluteRouter
 		private void ExtractSegments()
 		{
 			SchemeSegment = SchemePattern;
+			HostSegments = HostPattern == "" ? Enumerable.Empty<string>() : HostPattern.Split(HostSeparator);
 		}
 	}
 }
