@@ -46,7 +46,7 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests
 			string actual = parsed.SchemePattern;
 			actual.Should().Be("ftp");
 			parsed.HostPattern.Should().Be("{company}.com");
-			parsed.LocalPattern.Should().Be.Empty();
+			parsed.PathPattern.Should().Be.Empty();
 		}
 
 		[Test]

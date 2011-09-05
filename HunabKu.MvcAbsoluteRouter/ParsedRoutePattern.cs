@@ -32,12 +32,12 @@ namespace HunabKu.MvcAbsoluteRouter
 		public string OriginalPattern { get; private set; }
 		public string SchemePattern { get; private set; }
 		public string HostPattern { get; private set; }
-		public string LocalPattern { get; private set; }
+		public string PathPattern { get; private set; }
 		public string QueryPattern { get; private set; }
 
 		public string SchemeSegment { get; private set; }
 		public IEnumerable<string> HostSegments { get; private set; }
-		public IEnumerable<string> LocalSegments { get; private set; }
+		public IEnumerable<string> PathSegments { get; private set; }
 		public IEnumerable<KeyValuePair<string, string>> QuerySegments { get; private set; }
 
 		public static ParsedRoutePattern Parse(string pattern)
@@ -66,7 +66,7 @@ namespace HunabKu.MvcAbsoluteRouter
 
 			string pathAndQuery = !hasPath ? string.Empty: hasDns ? urlCleanedFromScheme.Substring(indexOfFirstSlash + 1) : urlCleanedFromScheme;
 			int indexOfQueryStringStart = pathAndQuery.IndexOf(QueryDelimiter);
-			LocalPattern = indexOfQueryStringStart > 0 ? pathAndQuery.Substring(0, indexOfQueryStringStart) : pathAndQuery;
+			PathPattern = indexOfQueryStringStart > 0 ? pathAndQuery.Substring(0, indexOfQueryStringStart) : pathAndQuery;
 			QueryPattern = indexOfQueryStringStart > 0 ? pathAndQuery.Substring(indexOfQueryStringStart + 1) : string.Empty;
 		}
 
@@ -74,14 +74,19 @@ namespace HunabKu.MvcAbsoluteRouter
 		{
 			SchemeSegment = SchemePattern;
 			HostSegments = HostPattern == "" ? Enumerable.Empty<string>() : HostPattern.Split(HostSeparator);
-			LocalSegments = LocalPattern == "" ? Enumerable.Empty<string>() : LocalPattern.Split(PathDelimiter);
-			QuerySegments = QueryPattern == "" ? Enumerable.Empty<KeyValuePair<string, string>>() : QueryPattern.Split(QuerySeparator).Where(varAssign => varAssign.IndexOf('=') > 0).Select(varAssign =>
-			                                                                                                                                  {
-			                                                                                                                                  	var indexEquals = varAssign.IndexOf('=');
-																																																																					var varName = varAssign.Substring(0, indexEquals);
-																																																																					var varValue = varAssign.Substring(indexEquals + 1);
-																																																																					return new KeyValuePair<string, string>(varName, varValue);
-			                                                                                                                                  }).ToList();
+			PathSegments = PathPattern == "" ? Enumerable.Empty<string>() : PathPattern.Split(PathDelimiter);
+			QuerySegments = QueryPattern == ""
+			                	? Enumerable.Empty<KeyValuePair<string, string>>()
+			                	: QueryPattern.Split(QuerySeparator)
+			                	  	.Select(x => new Tuple<string, int>(x, x.IndexOf('=')))
+			                	  	.Where(t => t.Item2 > 0)
+			                	  	.Select(t =>
+			                	  	        {
+			                	  	        	string varName = t.Item1.Substring(0, t.Item2);
+			                	  	        	string varValue = t.Item1.Substring(t.Item2 + 1);
+			                	  	        	return new KeyValuePair<string, string>(varName, varValue);
+			                	  	        })
+			                	  	.ToList();
 		}
 	}
 }

@@ -10,7 +10,7 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests
  		public void WhenPatternIsJustLocalThenAssignLocalPattern()
 		{
 			var parsed = ParsedRoutePattern.Parse("{area}");
-			string actual = parsed.LocalPattern;
+			string actual = parsed.PathPattern;
 			actual.Should().Be("{area}");
 		}
 
@@ -18,7 +18,7 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests
 		public void WhenPatternContainsDomainThenAssignLocalPattern()
 		{
 			var parsed = ParsedRoutePattern.Parse("http://acme.com/{area}");
-			string actual = parsed.LocalPattern;
+			string actual = parsed.PathPattern;
 			actual.Should().Be("{area}");
 		}
 
@@ -26,7 +26,7 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests
 		public void WhenPatternContainsQueryThenAssignLocalPattern()
 		{
 			var parsed = ParsedRoutePattern.Parse("{area}?a=5&b=6");
-			string actual = parsed.LocalPattern;
+			string actual = parsed.PathPattern;
 			actual.Should().Be("{area}");
 		}
 
@@ -34,7 +34,7 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests
 		public void WhenPatternContainsDomainAndQueryThenAssignLocalPattern()
 		{
 			var parsed = ParsedRoutePattern.Parse("http://acme.com/{area}?a=5&b=6");
-			string actual = parsed.LocalPattern;
+			string actual = parsed.PathPattern;
 			actual.Should().Be("{area}");
 		}
 
@@ -42,7 +42,7 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests
 		public void WhenPatternIsSchemaAndDomainThenEmptyLocalPattern()
 		{
 			var parsed = ParsedRoutePattern.Parse("http://{company}.com/");
-			string actual = parsed.LocalPattern;
+			string actual = parsed.PathPattern;
 			actual.Should().Be.Empty();
 		}
 
@@ -50,7 +50,7 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests
 		public void WhenPatternIsSchemaAndDomainWithoutEndSlashThenEmptyLocalPattern()
 		{
 			var parsed = ParsedRoutePattern.Parse("http://{company}.com");
-			string actual = parsed.LocalPattern;
+			string actual = parsed.PathPattern;
 			actual.Should().Be.Empty();
 		}
 
@@ -58,7 +58,7 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests
 		public void WhenPatternIsJustDomainThenEmptyLocalPattern()
 		{
 			var parsed = ParsedRoutePattern.Parse("{company}.com");
-			string actual = parsed.LocalPattern;
+			string actual = parsed.PathPattern;
 			actual.Should().Be.Empty();
 		}
 	}
