@@ -4,6 +4,11 @@ namespace HunabKu.MvcAbsoluteRouter
 {
 	public class ParsedRoutePattern
 	{
+		private const char PathDelimiter = '/';
+		private const char HostSeparator = '.';
+		private const char PortDelimiter = ':';
+		private const char QueryDelimiter = '?';
+
 		private ParsedRoutePattern(string pattern)
 		{
 			if (pattern == null)
@@ -40,16 +45,16 @@ namespace HunabKu.MvcAbsoluteRouter
 				SchemePattern = urlPattern.Substring(0, indexOfSchemeDelimiter);
 				urlCleanedFromScheme = urlPattern.Substring(indexOfSchemeDelimiter + Uri.SchemeDelimiter.Length);
 			}
-			int indexOfFirstSlash = urlCleanedFromScheme.IndexOf('/');
+			int indexOfFirstSlash = urlCleanedFromScheme.IndexOf(PathDelimiter);
 			bool hasPath = indexOfFirstSlash >= 0;
-			bool hasDns = urlCleanedFromScheme.IndexOf('.') >= 0;
+			bool hasDns = urlCleanedFromScheme.IndexOf(HostSeparator) >= 0;
 
 			string hostAndPort = hasPath ? urlCleanedFromScheme.Substring(0, indexOfFirstSlash) : (hasDns ? urlCleanedFromScheme : string.Empty);
-			int indexOfPortDelimiter = hostAndPort.IndexOf(":");
+			int indexOfPortDelimiter = hostAndPort.IndexOf(PortDelimiter);
 			HostPattern = indexOfPortDelimiter > 0 ? hostAndPort.Substring(0, indexOfPortDelimiter) : hostAndPort;
 
 			string pathAndQuery = hasPath ? urlCleanedFromScheme.Substring(indexOfFirstSlash + 1) : (hasDns ? string.Empty : urlCleanedFromScheme);
-			int indexOfQueryStringStart = pathAndQuery.IndexOf('?');
+			int indexOfQueryStringStart = pathAndQuery.IndexOf(QueryDelimiter);
 			LocalPattern = indexOfQueryStringStart > 0 ? pathAndQuery.Substring(0, indexOfQueryStringStart) : pathAndQuery;
 			QueryPattern = indexOfQueryStringStart > 0 ? pathAndQuery.Substring(indexOfQueryStringStart + 1) : string.Empty;
 		}
