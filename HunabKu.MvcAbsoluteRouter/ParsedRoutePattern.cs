@@ -36,6 +36,7 @@ namespace HunabKu.MvcAbsoluteRouter
 
 		public string SchemeSegment { get; private set; }
 		public IEnumerable<string> HostSegments { get; private set; }
+		public IEnumerable<string> LocalSegments { get; private set; }
 
 		public static ParsedRoutePattern Parse(string pattern)
 		{
@@ -53,14 +54,15 @@ namespace HunabKu.MvcAbsoluteRouter
 				urlCleanedFromScheme = urlPattern.Substring(indexOfSchemeDelimiter + SchemeDelimiter.Length);
 			}
 			int indexOfFirstSlash = urlCleanedFromScheme.IndexOf(PathDelimiter);
-			bool hasPath = indexOfFirstSlash >= 0;
-			bool hasDns = urlCleanedFromScheme.IndexOf(HostSeparator) >= 0;
+			int indexOfFirstDot = urlCleanedFromScheme.IndexOf(HostSeparator);
+			bool hasDns = indexOfFirstDot >= 0;
+			bool hasPath = (hasDns && indexOfFirstSlash > indexOfFirstDot) || !hasDns;
 
-			string hostAndPort = hasPath ? urlCleanedFromScheme.Substring(0, indexOfFirstSlash) : (hasDns ? urlCleanedFromScheme : string.Empty);
+			string hostAndPort = !hasDns ? string.Empty : hasPath ? urlCleanedFromScheme.Substring(0, indexOfFirstSlash) : urlCleanedFromScheme;
 			int indexOfPortDelimiter = hostAndPort.IndexOf(PortDelimiter);
 			HostPattern = indexOfPortDelimiter > 0 ? hostAndPort.Substring(0, indexOfPortDelimiter) : hostAndPort;
 
-			string pathAndQuery = hasPath ? urlCleanedFromScheme.Substring(indexOfFirstSlash + 1) : (hasDns ? string.Empty : urlCleanedFromScheme);
+			string pathAndQuery = !hasPath ? string.Empty: hasDns ? urlCleanedFromScheme.Substring(indexOfFirstSlash + 1) : urlCleanedFromScheme;
 			int indexOfQueryStringStart = pathAndQuery.IndexOf(QueryDelimiter);
 			LocalPattern = indexOfQueryStringStart > 0 ? pathAndQuery.Substring(0, indexOfQueryStringStart) : pathAndQuery;
 			QueryPattern = indexOfQueryStringStart > 0 ? pathAndQuery.Substring(indexOfQueryStringStart + 1) : string.Empty;
@@ -70,6 +72,7 @@ namespace HunabKu.MvcAbsoluteRouter
 		{
 			SchemeSegment = SchemePattern;
 			HostSegments = HostPattern == "" ? Enumerable.Empty<string>() : HostPattern.Split(HostSeparator);
+			LocalSegments = LocalPattern == "" ? Enumerable.Empty<string>() : LocalPattern.Split(PathDelimiter);
 		}
 	}
 }
