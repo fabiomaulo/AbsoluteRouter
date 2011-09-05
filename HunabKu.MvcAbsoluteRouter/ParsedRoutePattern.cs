@@ -11,6 +11,7 @@ namespace HunabKu.MvcAbsoluteRouter
 		private const char HostSeparator = '.';
 		private const char PortDelimiter = ':';
 		private const char QueryDelimiter = '?';
+		private const char QuerySeparator = '&';
 
 		private ParsedRoutePattern(string pattern)
 		{
@@ -37,6 +38,7 @@ namespace HunabKu.MvcAbsoluteRouter
 		public string SchemeSegment { get; private set; }
 		public IEnumerable<string> HostSegments { get; private set; }
 		public IEnumerable<string> LocalSegments { get; private set; }
+		public IEnumerable<KeyValuePair<string, string>> QuerySegments { get; private set; }
 
 		public static ParsedRoutePattern Parse(string pattern)
 		{
@@ -73,6 +75,13 @@ namespace HunabKu.MvcAbsoluteRouter
 			SchemeSegment = SchemePattern;
 			HostSegments = HostPattern == "" ? Enumerable.Empty<string>() : HostPattern.Split(HostSeparator);
 			LocalSegments = LocalPattern == "" ? Enumerable.Empty<string>() : LocalPattern.Split(PathDelimiter);
+			QuerySegments = QueryPattern == "" ? Enumerable.Empty<KeyValuePair<string, string>>() : QueryPattern.Split(QuerySeparator).Where(varAssign => varAssign.IndexOf('=') > 0).Select(varAssign =>
+			                                                                                                                                  {
+			                                                                                                                                  	var indexEquals = varAssign.IndexOf('=');
+																																																																					var varName = varAssign.Substring(0, indexEquals);
+																																																																					var varValue = varAssign.Substring(indexEquals + 1);
+																																																																					return new KeyValuePair<string, string>(varName, varValue);
+			                                                                                                                                  }).ToList();
 		}
 	}
 }
