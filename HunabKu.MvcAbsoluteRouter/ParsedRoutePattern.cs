@@ -118,24 +118,9 @@ namespace HunabKu.MvcAbsoluteRouter
 			{
 				return null;
 			}
-			if (hostSegments.Count != parsedUrl.hostSegments.Count)
+			if (hostSegments.Count != parsedUrl.hostSegments.Count || !SegmentsMatchs(hostSegments, parsedUrl, values))
 			{
 				return null;
-			}
-			IList<string> segments = hostSegments;
-			for (int i = 0; i < segments.Count; i++)
-			{
-				bool segmenIsAVariable = IsVariableSegment(segments[i]);
-				string matchSegment = parsedUrl.hostSegments[i];
-				if (!matchSegment.Equals(segments[i], StringComparison.InvariantCultureIgnoreCase) && !segmenIsAVariable)
-				{
-					return null;
-				}
-				if (segmenIsAVariable)
-				{
-					string variableName = GetVariableName(segments[i]);
-					values[variableName] = matchSegment;
-				}
 			}
 			for (int i = 0; i < pathSegments.Count; i++)
 			{
@@ -152,6 +137,25 @@ namespace HunabKu.MvcAbsoluteRouter
 				}
 			}
 			return values;
+		}
+
+		private bool SegmentsMatchs(IList<string> segments, ParsedRoutePattern parsedUrl, RouteValueDictionary values)
+		{
+			for (int i = 0; i < segments.Count; i++)
+			{
+				bool segmenIsAVariable = IsVariableSegment(segments[i]);
+				string matchSegment = parsedUrl.hostSegments[i];
+				if (!matchSegment.Equals(segments[i], StringComparison.InvariantCultureIgnoreCase) && !segmenIsAVariable)
+				{
+					return false;
+				}
+				if (segmenIsAVariable)
+				{
+					string variableName = GetVariableName(segments[i]);
+					values[variableName] = matchSegment;
+				}
+			}
+			return true;
 		}
 
 		private bool IsVariableSegment(string urlSegment)
