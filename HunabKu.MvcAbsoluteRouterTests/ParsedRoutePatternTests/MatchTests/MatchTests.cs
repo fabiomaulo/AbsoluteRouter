@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Web.Routing;
+﻿using System.Web.Routing;
 using HunabKu.MvcAbsoluteRouter;
 using NUnit.Framework;
 using SharpTestsEx;
 using SharpTestsEx.Mvc;
 
-namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests
+namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests.MatchTests
 {
 	public class MatchTests
 	{
