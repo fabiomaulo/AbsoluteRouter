@@ -53,7 +53,9 @@
     <Compile Include="ParsedRoutePatternTests\HostSegmentsTests.cs" />
     <Compile Include="ParsedRoutePatternTests\LocalPatternTests.cs" />
     <Compile Include="ParsedRoutePatternTests\LocalSegmentsTests.cs" />
-    <Compile Include="ParsedRoutePatternTests\MatchTests.cs" />
+    <Compile Include="ParsedRoutePatternTests\MatchTests\MatchTests.cs" />
+    <Compile Include="ParsedRoutePatternTests\MatchTests\VariablesInPathTests.cs" />
+    <Compile Include="ParsedRoutePatternTests\MatchTests\VariablesInSchemeTests.cs" />
     <Compile Include="ParsedRoutePatternTests\QueryPatternTests.cs" />
     <Compile Include="ParsedRoutePatternTests\QuerySegmentsTests.cs" />
     <Compile Include="ParsedRoutePatternTests\SchemePatternTests.cs" />

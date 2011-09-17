@@ -37,7 +37,12 @@ namespace HunabKu.MvcAbsoluteRouter
 		public string QueryPattern { get; private set; }
 
 		public string SchemeSegment { get; private set; }
-		public IEnumerable<string> HostSegments { get; private set; }
+		private IList<string> hostSegments;
+		public IEnumerable<string> HostSegments
+		{
+			get { return hostSegments; }
+		}
+
 		public IEnumerable<string> PathSegments { get; private set; }
 		public IEnumerable<KeyValuePair<string, string>> QuerySegments { get; private set; }
 
@@ -74,7 +79,7 @@ namespace HunabKu.MvcAbsoluteRouter
 		private void ExtractSegments()
 		{
 			SchemeSegment = SchemePattern;
-			HostSegments = HostPattern == "" ? Enumerable.Empty<string>() : HostPattern.Split(HostSeparator);
+			hostSegments = HostPattern == "" ? Enumerable.Empty<string>().ToList() : HostPattern.Split(HostSeparator).ToList();
 			PathSegments = PathPattern == "" ? Enumerable.Empty<string>() : PathPattern.Split(PathDelimiter);
 			QuerySegments = QueryPattern == ""
 			                	? Enumerable.Empty<KeyValuePair<string, string>>()
@@ -97,12 +102,32 @@ namespace HunabKu.MvcAbsoluteRouter
 				return null;
 			}
 			var parsedUrl = Parse(url.ToString());
-			if (HostPattern == parsedUrl.HostPattern)
+			RouteValueDictionary values = defaults != null ? new RouteValueDictionary(defaults) : new RouteValueDictionary();
+
+			if (IsVariableSegment(SchemeSegment))
 			{
-				RouteValueDictionary values = defaults != null ? new RouteValueDictionary(defaults) : new RouteValueDictionary();
-				return values;
+				var variableName = GetVariableName(SchemeSegment);
+				values[variableName] = parsedUrl.SchemeSegment;
 			}
-			return null;
+			else if(!parsedUrl.SchemeSegment.Equals(SchemeSegment) && SchemeSegment != "")
+			{
+				return null;
+			}
+			if (HostPattern != parsedUrl.HostPattern)
+			{
+				return null;
+			}
+			return values;
+		}
+
+		private bool IsVariableSegment(string urlSegment)
+		{
+			return urlSegment.StartsWith("{") && urlSegment.EndsWith("}");
+		}
+
+		private string GetVariableName(string urlSegment)
+		{
+			return urlSegment.Trim('{', '}');
 		}
 	}
 }
