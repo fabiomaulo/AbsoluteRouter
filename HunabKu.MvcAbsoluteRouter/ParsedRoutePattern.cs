@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.Routing;
 
 namespace HunabKu.MvcAbsoluteRouter
 {
@@ -87,6 +88,20 @@ namespace HunabKu.MvcAbsoluteRouter
 			                	  	        	return new KeyValuePair<string, string>(varName, varValue);
 			                	  	        })
 			                	  	.ToList();
+		}
+
+		public RouteValueDictionary Match(Uri url, RouteValueDictionary defaults)
+		{
+			if (url == null)
+			{
+				return null;
+			}
+			var parsedUrl = Parse(url.ToString());
+			if(HostPattern == parsedUrl.HostPattern)
+			{
+				return new RouteValueDictionary();
+			}
+			return null;
 		}
 	}
 }

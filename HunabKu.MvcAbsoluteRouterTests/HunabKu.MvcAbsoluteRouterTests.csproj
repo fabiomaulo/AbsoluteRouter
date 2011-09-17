@@ -44,6 +44,7 @@
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Routing" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbsoluteRouteTests\ConstructorsTests.cs" />
@@ -52,6 +53,7 @@
     <Compile Include="ParsedRoutePatternTests\HostSegmentsTests.cs" />
     <Compile Include="ParsedRoutePatternTests\LocalPatternTests.cs" />
     <Compile Include="ParsedRoutePatternTests\LocalSegmentsTests.cs" />
+    <Compile Include="ParsedRoutePatternTests\MatchTests.cs" />
     <Compile Include="ParsedRoutePatternTests\QueryPatternTests.cs" />
     <Compile Include="ParsedRoutePatternTests\QuerySegmentsTests.cs" />
     <Compile Include="ParsedRoutePatternTests\SchemePatternTests.cs" />
