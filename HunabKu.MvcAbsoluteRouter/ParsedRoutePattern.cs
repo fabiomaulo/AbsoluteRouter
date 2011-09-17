@@ -43,7 +43,12 @@ namespace HunabKu.MvcAbsoluteRouter
 			get { return hostSegments; }
 		}
 
-		public IEnumerable<string> PathSegments { get; private set; }
+		private IList<string> pathSegments;
+		public IEnumerable<string> PathSegments
+		{
+			get { return pathSegments; }
+		}
+
 		public IEnumerable<KeyValuePair<string, string>> QuerySegments { get; private set; }
 
 		public static ParsedRoutePattern Parse(string pattern)
@@ -80,7 +85,7 @@ namespace HunabKu.MvcAbsoluteRouter
 		{
 			SchemeSegment = SchemePattern;
 			hostSegments = HostPattern == "" ? Enumerable.Empty<string>().ToList() : HostPattern.Split(HostSeparator).ToList();
-			PathSegments = PathPattern == "" ? Enumerable.Empty<string>() : PathPattern.Split(PathDelimiter);
+			pathSegments = PathPattern == "" ? Enumerable.Empty<string>().ToList() : PathPattern.Split(PathDelimiter).ToList();
 			QuerySegments = QueryPattern == ""
 			                	? Enumerable.Empty<KeyValuePair<string, string>>()
 			                	: QueryPattern.Split(QuerySeparator)
@@ -124,6 +129,20 @@ namespace HunabKu.MvcAbsoluteRouter
 				if (segmenIsAVariable)
 				{
 					string variableName = GetVariableName(hostSegments[i]);
+					values[variableName] = matchSegment;
+				}
+			}
+			for (int i = 0; i < pathSegments.Count; i++)
+			{
+				bool segmenIsAVariable = IsVariableSegment(pathSegments[i]);
+				string matchSegment = parsedUrl.pathSegments[i];
+				if (!matchSegment.Equals(pathSegments[i], StringComparison.InvariantCultureIgnoreCase) && !segmenIsAVariable)
+				{
+					return null;
+				}
+				if (segmenIsAVariable)
+				{
+					string variableName = GetVariableName(pathSegments[i]);
 					values[variableName] = matchSegment;
 				}
 			}

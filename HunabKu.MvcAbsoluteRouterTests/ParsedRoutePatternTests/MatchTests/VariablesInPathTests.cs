@@ -7,7 +7,7 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests.MatchTests
 {
 	public class VariablesInPathTests
 	{
-		[Test, Ignore("Not fixed yet")]
+		[Test]
 		public void WhenPatternContainsDomainThenReturnVariableInPath()
 		{
 			var parsed = ParsedRoutePattern.Parse("http://acme.com/{area}");
@@ -15,6 +15,14 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests.MatchTests
 			var actual = parsed.Match(url, null);
 			actual["area"].Should().Be("pizza");
 		}
- 
+
+		[Test]
+		public void WhenUrlIsLargerThenMatchAndReturnVariableInPath()
+		{
+			var parsed = ParsedRoutePattern.Parse("http://acme.com/{area}");
+			var url = "http://acme.com/pizza/5".AsUri();
+			var actual = parsed.Match(url, null);
+			actual["area"].Should().Be("pizza");
+		}
 	}
 }
