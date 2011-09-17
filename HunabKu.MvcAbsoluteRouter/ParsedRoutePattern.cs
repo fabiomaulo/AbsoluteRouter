@@ -118,6 +118,10 @@ namespace HunabKu.MvcAbsoluteRouter
 			{
 				return null;
 			}
+			if(hostSegments.Count != parsedUrl.hostSegments.Count)
+			{
+				return null;
+			}
 			for (int i = 0; i < hostSegments.Count; i++)
 			{
 				bool segmenIsAVariable = IsVariableSegment(hostSegments[i]);
