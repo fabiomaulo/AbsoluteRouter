@@ -97,9 +97,10 @@ namespace HunabKu.MvcAbsoluteRouter
 				return null;
 			}
 			var parsedUrl = Parse(url.ToString());
-			if(HostPattern == parsedUrl.HostPattern)
+			if (HostPattern == parsedUrl.HostPattern)
 			{
-				return new RouteValueDictionary();
+				RouteValueDictionary values = defaults != null ? new RouteValueDictionary(defaults) : new RouteValueDictionary();
+				return values;
 			}
 			return null;
 		}
