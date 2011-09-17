@@ -19,10 +19,19 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests.MatchTests
 		[Test]
 		public void WhenSchemeDoesNotMatchThenReturnNull()
 		{
-			var parsed = ParsedRoutePattern.Parse("ftp://{company}.com");
+			var parsed = ParsedRoutePattern.Parse("ftp://acme.com");
 			var url = "http://acme.com".AsUri();
 			var actual = parsed.Match(url, null);
 			actual.Should().Be.Null();
+		}
+
+		[Test]
+		public void WhenSchemeMatchAndIsNotVariableThenReturnEmpty()
+		{
+			var parsed = ParsedRoutePattern.Parse("ftp://acme.com");
+			var url = "FTP://acme.com".AsUri();
+			var actual = parsed.Match(url, null);
+			actual.Should().Be.Empty();
 		}
 	}
 }
