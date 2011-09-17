@@ -43,9 +43,10 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbsoluteRouteTests\ConstructorsTests.cs" />
     <Compile Include="ParsedRoutePatternTests\ConstructorsTests.cs" />
     <Compile Include="ParsedRoutePatternTests\DnsSafeHostPatternTests.cs" />
     <Compile Include="ParsedRoutePatternTests\HostSegmentsTests.cs" />
