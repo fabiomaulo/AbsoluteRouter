@@ -118,21 +118,22 @@ namespace HunabKu.MvcAbsoluteRouter
 			{
 				return null;
 			}
-			if(hostSegments.Count != parsedUrl.hostSegments.Count)
+			if (hostSegments.Count != parsedUrl.hostSegments.Count)
 			{
 				return null;
 			}
-			for (int i = 0; i < hostSegments.Count; i++)
+			IList<string> segments = hostSegments;
+			for (int i = 0; i < segments.Count; i++)
 			{
-				bool segmenIsAVariable = IsVariableSegment(hostSegments[i]);
+				bool segmenIsAVariable = IsVariableSegment(segments[i]);
 				string matchSegment = parsedUrl.hostSegments[i];
-				if (!matchSegment.Equals(hostSegments[i], StringComparison.InvariantCultureIgnoreCase) && !segmenIsAVariable)
+				if (!matchSegment.Equals(segments[i], StringComparison.InvariantCultureIgnoreCase) && !segmenIsAVariable)
 				{
 					return null;
 				}
 				if (segmenIsAVariable)
 				{
-					string variableName = GetVariableName(hostSegments[i]);
+					string variableName = GetVariableName(segments[i]);
 					values[variableName] = matchSegment;
 				}
 			}
