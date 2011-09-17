@@ -109,13 +109,23 @@ namespace HunabKu.MvcAbsoluteRouter
 				var variableName = GetVariableName(SchemeSegment);
 				values[variableName] = parsedUrl.SchemeSegment;
 			}
-			else if(!parsedUrl.SchemeSegment.Equals(SchemeSegment) && SchemeSegment != "")
+			else if (!parsedUrl.SchemeSegment.Equals(SchemeSegment) && SchemeSegment != "")
 			{
 				return null;
 			}
-			if (HostPattern != parsedUrl.HostPattern)
+			for (int i = 0; i < hostSegments.Count; i++)
 			{
-				return null;
+				bool segmenIsAVariable = IsVariableSegment(hostSegments[i]);
+				string matchSegment = parsedUrl.hostSegments[i];
+				if (!matchSegment.Equals(hostSegments[i], StringComparison.InvariantCultureIgnoreCase) && !segmenIsAVariable)
+				{
+					return null;
+				}
+				if (segmenIsAVariable)
+				{
+					string variableName = GetVariableName(hostSegments[i]);
+					values[variableName] = matchSegment;
+				}
 			}
 			return values;
 		}

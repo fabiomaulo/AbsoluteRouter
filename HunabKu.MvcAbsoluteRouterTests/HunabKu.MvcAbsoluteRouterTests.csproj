@@ -53,6 +53,7 @@
     <Compile Include="ParsedRoutePatternTests\HostSegmentsTests.cs" />
     <Compile Include="ParsedRoutePatternTests\LocalPatternTests.cs" />
     <Compile Include="ParsedRoutePatternTests\LocalSegmentsTests.cs" />
+    <Compile Include="ParsedRoutePatternTests\MatchTests\VariablesInDomainTests.cs" />
     <Compile Include="ParsedRoutePatternTests\MatchTests\MatchTests.cs" />
     <Compile Include="ParsedRoutePatternTests\MatchTests\VariablesInPathTests.cs" />
     <Compile Include="ParsedRoutePatternTests\MatchTests\VariablesInSchemeTests.cs" />
