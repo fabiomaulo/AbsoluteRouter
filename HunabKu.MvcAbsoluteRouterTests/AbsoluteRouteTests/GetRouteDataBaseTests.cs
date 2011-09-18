@@ -1,4 +1,5 @@
-﻿using HunabKu.MvcAbsoluteRouter;
+﻿using System.Web.Routing;
+using HunabKu.MvcAbsoluteRouter;
 using NUnit.Framework;
 using SharpTestsEx;
 using SharpTestsEx.Mvc;
@@ -34,6 +35,17 @@ namespace HunabKu.MvcAbsoluteRouterTests.AbsoluteRouteTests
 			var context = "http://acme.com/pizza/calda/1".AsUri().ToHttpContext();
 			var routedata = route.GetRouteData(context);
 			routedata.Route.Should().Be.SameInstanceAs(route);
+		}
+
+		[Test]
+		public void WhenMatchThenAssignRouteHandler()
+		{
+			var stopRoutingHandler = new StopRoutingHandler();
+
+			var route = new AbsoluteRoute("{controller}/{action}/{id}",routeHandler:stopRoutingHandler);
+			var context = "http://acme.com/pizza/calda/1".AsUri().ToHttpContext();
+			var routedata = route.GetRouteData(context);
+			routedata.RouteHandler.Should().Be.SameInstanceAs(stopRoutingHandler);
 		}
 	}
 }

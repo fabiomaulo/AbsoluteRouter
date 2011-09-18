@@ -45,7 +45,7 @@ namespace HunabKu.MvcAbsoluteRouter
 				return null;
 			}
 
-			var routeData = new RouteData(this, null);
+			var routeData = new RouteData(this, RouteHandler);
 			foreach (var value in values)
 			{
 				routeData.Values.Add(value.Key, value.Value);
