@@ -46,13 +46,13 @@ namespace HunabKu.MvcAbsoluteRouter
 			}
 
 			var routeData = new RouteData(this, RouteHandler);
-			CopyDictionary(values, routeData.Values);
-			CopyDictionary(DataTokens, routeData.DataTokens);
+			OverrideMergeDictionary(values, routeData.Values);
+			OverrideMergeDictionary(DataTokens, routeData.DataTokens);
 
 			return routeData;
 		}
 
-		private static void CopyDictionary(RouteValueDictionary source, RouteValueDictionary destination)
+		private static void OverrideMergeDictionary(RouteValueDictionary source, RouteValueDictionary destination)
 		{
 			if (source == null)
 			{
