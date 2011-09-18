@@ -38,12 +38,12 @@ namespace HunabKu.MvcAbsoluteRouter
 
 		public override RouteData GetRouteData(HttpContextBase httpContext)
 		{
-			throw new NotImplementedException();
+			return null;
 		}
 
 		public override VirtualPathData GetVirtualPath(RequestContext requestContext, RouteValueDictionary values)
 		{
-			throw new NotImplementedException();
+			return null;
 		}
 	}
 }

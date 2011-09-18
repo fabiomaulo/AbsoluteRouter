@@ -44,10 +44,12 @@
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions" />
     <Reference Include="System.Web.Routing" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbsoluteRouteTests\ConstructorsTests.cs" />
+    <Compile Include="AbsoluteRouteTests\GetRouteDataBaseTests.cs" />
     <Compile Include="ParsedRoutePatternTests\ConstructorsTests.cs" />
     <Compile Include="ParsedRoutePatternTests\DnsSafeHostPatternTests.cs" />
     <Compile Include="ParsedRoutePatternTests\HostSegmentsTests.cs" />
