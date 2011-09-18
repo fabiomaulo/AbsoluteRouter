@@ -114,7 +114,7 @@ namespace HunabKu.MvcAbsoluteRouter
 				var variableName = GetVariableName(SchemeSegment);
 				values[variableName] = parsedUrl.SchemeSegment;
 			}
-			else if (!parsedUrl.SchemeSegment.Equals(SchemeSegment, StringComparison.InvariantCultureIgnoreCase) && SchemeSegment != "")
+			else if (!parsedUrl.SchemeSegment.Equals(SchemeSegment, StringComparison.InvariantCultureIgnoreCase) && !"".Equals(SchemeSegment))
 			{
 				return null;
 			}
