@@ -47,5 +47,17 @@ namespace HunabKu.MvcAbsoluteRouterTests.AbsoluteRouteTests
 			var routedata = route.GetRouteData(context);
 			routedata.RouteHandler.Should().Be.SameInstanceAs(stopRoutingHandler);
 		}
+
+		[Test]
+		public void WhenMatchThenCopyDataTokens()
+		{
+			var route = new AbsoluteRoute("{controller}/{action}/{id}", dataTokens: new RouteValueDictionary(new { a = 1, b = 2 }));
+			var context = "http://acme.com/pizza/calda/1".AsUri().ToHttpContext();
+			var routedata = route.GetRouteData(context);
+			var tokens = routedata.DataTokens;
+			tokens.Should().Not.Be.Null();
+			tokens["a"].Should().Be(1);
+			tokens["b"].Should().Be(2);
+		}
 	}
 }

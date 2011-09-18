@@ -49,7 +49,15 @@ namespace HunabKu.MvcAbsoluteRouter
 			foreach (var value in values)
 			{
 				routeData.Values.Add(value.Key, value.Value);
-			} 
+			}
+			if (DataTokens != null)
+			{
+				foreach (var token in DataTokens)
+				{
+					routeData.DataTokens[token.Key] = token.Value;
+				}
+			}
+
 			return routeData;
 		}
 
