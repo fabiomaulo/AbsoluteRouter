@@ -33,5 +33,14 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests.MatchTests
 			var actual = parsed.Match(url, null);
 			actual.Should().Be.Empty();
 		}
+
+		[Test]
+		public void WhenSchemeMatchCaseInsensitiveThenReturnEmpty()
+		{
+			var parsed = ParsedRoutePattern.Parse("FtP://acme.com");
+			var url = "FTP://acme.com".AsUri();
+			var actual = parsed.Match(url, null);
+			actual.Should().Be.Empty();
+		}
 	}
 }

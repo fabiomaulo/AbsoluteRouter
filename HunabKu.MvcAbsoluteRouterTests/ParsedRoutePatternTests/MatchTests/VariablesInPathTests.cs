@@ -1,4 +1,5 @@
-﻿using HunabKu.MvcAbsoluteRouter;
+﻿using System.Web.Routing;
+using HunabKu.MvcAbsoluteRouter;
 using NUnit.Framework;
 using SharpTestsEx;
 using SharpTestsEx.Mvc;
@@ -23,6 +24,25 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests.MatchTests
 			var url = "http://acme.com/pizza/5".AsUri();
 			var actual = parsed.Match(url, null);
 			actual["area"].Should().Be("pizza");
+		}
+
+		[Test]
+		public void WhenPatternIsLargerAndHasDefaultThenMatchAndReturnVariableInPath()
+		{
+			var parsed = ParsedRoutePattern.Parse("http://acme.com/{area}/{id}");
+			var url = "http://acme.com/pizza".AsUri();
+			var actual = parsed.Match(url, new RouteValueDictionary(new { id = 50 }));
+			actual["area"].Should().Be("pizza");
+			actual["id"].Should().Be(50);
+		}
+
+		[Test]
+		public void WhenPatternIsLargerDoesNotHaveDefaultThenNoMatch()
+		{
+			var parsed = ParsedRoutePattern.Parse("http://acme.com/{area}/{id}");
+			var url = "http://acme.com/pizza".AsUri();
+			var actual = parsed.Match(url, new RouteValueDictionary(new { ostia = 50 }));
+			actual.Should().Be.Null();
 		}
 	}
 }

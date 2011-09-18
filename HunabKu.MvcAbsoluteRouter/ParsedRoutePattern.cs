@@ -114,7 +114,7 @@ namespace HunabKu.MvcAbsoluteRouter
 				var variableName = GetVariableName(SchemeSegment);
 				values[variableName] = parsedUrl.SchemeSegment;
 			}
-			else if (!parsedUrl.SchemeSegment.Equals(SchemeSegment) && SchemeSegment != "")
+			else if (!parsedUrl.SchemeSegment.Equals(SchemeSegment, StringComparison.InvariantCultureIgnoreCase) && SchemeSegment != "")
 			{
 				return null;
 			}
@@ -134,8 +134,24 @@ namespace HunabKu.MvcAbsoluteRouter
 			for (int i = 0; i < segments.Count; i++)
 			{
 				bool segmenIsAVariable = IsVariableSegment(segments[i]);
-				string matchSegment = segmentesValues[i];
-				if (!matchSegment.Equals(segments[i], StringComparison.InvariantCultureIgnoreCase) && !segmenIsAVariable)
+				object matchSegment;
+				if (segmentesValues.Count <= i)
+				{
+					if(!segmenIsAVariable)
+					{
+						return false;
+					}
+					string variableName = GetVariableName(segments[i]);
+					if (!values.TryGetValue(variableName, out matchSegment))
+					{
+						return false;
+					}
+				}
+				else
+				{
+					matchSegment = segmentesValues[i];
+				}
+				if (!segments[i].Equals(matchSegment.ToString(), StringComparison.InvariantCultureIgnoreCase) && !segmenIsAVariable)
 				{
 					return false;
 				}
