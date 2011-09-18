@@ -38,7 +38,19 @@ namespace HunabKu.MvcAbsoluteRouter
 
 		public override RouteData GetRouteData(HttpContextBase httpContext)
 		{
-			return null;
+			Uri requestUrl = httpContext.Request.Url;
+			RouteValueDictionary values = parsedRoute.Match(requestUrl, Defaults);
+			if (values == null)
+			{
+				return null;
+			}
+
+			var routeData = new RouteData();
+			foreach (var value in values)
+			{
+				routeData.Values.Add(value.Key, value.Value);
+			} 
+			return routeData;
 		}
 
 		public override VirtualPathData GetVirtualPath(RequestContext requestContext, RouteValueDictionary values)
