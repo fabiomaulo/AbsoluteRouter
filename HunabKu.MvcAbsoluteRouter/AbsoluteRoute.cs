@@ -46,19 +46,22 @@ namespace HunabKu.MvcAbsoluteRouter
 			}
 
 			var routeData = new RouteData(this, RouteHandler);
-			foreach (var value in values)
-			{
-				routeData.Values.Add(value.Key, value.Value);
-			}
-			if (DataTokens != null)
-			{
-				foreach (var token in DataTokens)
-				{
-					routeData.DataTokens[token.Key] = token.Value;
-				}
-			}
+			CopyDictionary(values, routeData.Values);
+			CopyDictionary(DataTokens, routeData.DataTokens);
 
 			return routeData;
+		}
+
+		private static void CopyDictionary(RouteValueDictionary source, RouteValueDictionary destination)
+		{
+			if (source == null)
+			{
+				return;
+			}
+			foreach (var value in source)
+			{
+				destination[value.Key] = value.Value;
+			}
 		}
 
 		public override VirtualPathData GetVirtualPath(RequestContext requestContext, RouteValueDictionary values)
