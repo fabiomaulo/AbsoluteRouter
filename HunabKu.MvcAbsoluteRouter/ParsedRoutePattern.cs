@@ -109,6 +109,7 @@ namespace HunabKu.MvcAbsoluteRouter
 			var parsedUrl = Parse(url.ToString());
 			RouteValueDictionary values = defaults != null ? new RouteValueDictionary(defaults) : new RouteValueDictionary();
 
+			// check Scheme
 			if (IsVariableSegment(SchemeSegment))
 			{
 				var variableName = GetVariableName(SchemeSegment);
@@ -118,10 +119,14 @@ namespace HunabKu.MvcAbsoluteRouter
 			{
 				return null;
 			}
+
+			// check Host
 			if ((hostSegments.Count != parsedUrl.hostSegments.Count || !SegmentsMatchs(hostSegments, parsedUrl.hostSegments, values)) && !"".Equals(HostPattern))
 			{
 				return null;
 			}
+
+			// check Path
 			if (!SegmentsMatchs(pathSegments, parsedUrl.pathSegments, values))
 			{
 				return null;
