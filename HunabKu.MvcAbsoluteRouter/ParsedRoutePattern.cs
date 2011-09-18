@@ -145,15 +145,31 @@ namespace HunabKu.MvcAbsoluteRouter
 				bool segmenIsAVariable = IsVariableSegment(segments[i]);
 				if (IsMatchAllSegment(segments[i]))
 				{
-					var sb = new StringBuilder(100);
-					sb.Append(segmentesValues[i]);
-					collectedSegments++;
-					for (int j = i + 1; j < segmentesValues.Count; j++)
-					{
-						sb.Append(segmentsSeparator).Append(segmentesValues[j]);
-						collectedSegments++;
-					}
 					string variableName = GetVariableName(segments[i]);
+					var sb = new StringBuilder(100);
+					if (segmentesValues.Count <= i)
+					{
+						if (!segmenIsAVariable)
+						{
+							return false;
+						}
+						object matchAllDefault;
+						if (!values.TryGetValue(variableName, out matchAllDefault))
+						{
+							return false;
+						}
+						sb.Append(matchAllDefault);
+					}
+					else
+					{
+						sb.Append(segmentesValues[i]);
+						collectedSegments++;
+						for (int j = i + 1; j < segmentesValues.Count; j++)
+						{
+							sb.Append(segmentsSeparator).Append(segmentesValues[j]);
+							collectedSegments++;
+						}
+					}
 					values[variableName] = sb.ToString();
 					break;
 				}

@@ -64,5 +64,23 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests.MatchTests
 			actual["area"].Should().Be("pippo");
 			actual["info"].Should().Be("pluto/paperino");
 		}
+
+		[Test]
+		public void WhenMatchAllHasJustDefaultThenReturnVariablesValues()
+		{
+			var parsed = ParsedRoutePattern.Parse("http://acme.com/{*info}");
+			var url = "http://acme.com".AsUri();
+			var actual = parsed.Match(url, new RouteValueDictionary(new { info = 50 }));
+			actual["info"].Should().Be("50");
+		}
+
+		[Test]
+		public void WhenMatchAllHasNoValueThenNoMatch()
+		{
+			var parsed = ParsedRoutePattern.Parse("acme.com/{*info}");
+			var url = "http://acme.com".AsUri();
+			var actual = parsed.Match(url, null);
+			actual.Should().Be.Null();
+		}
 	}
 }
