@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Web.Routing;
 
 namespace HunabKu.MvcAbsoluteRouter
@@ -84,6 +85,7 @@ namespace HunabKu.MvcAbsoluteRouter
 
 		private void ExtractSegments()
 		{
+			// TODO : validation of segments (for example the match-all segment should be the last os a section)
 			SchemeSegment = SchemePattern;
 			hostSegments = HostPattern == "" ? Enumerable.Empty<string>().ToList() : HostPattern.Split(HostSeparator).ToList();
 			pathSegments = PathPattern == "" ? Enumerable.Empty<string>().ToList() : PathPattern.Split(PathDelimiter).ToList();
@@ -122,24 +124,39 @@ namespace HunabKu.MvcAbsoluteRouter
 			}
 
 			// check Host
-			if ((hostSegments.Count != parsedUrl.hostSegments.Count || !SegmentsMatchs(hostSegments, parsedUrl.hostSegments, values)) && !"".Equals(HostPattern))
+			if (!SegmentsMatchs(hostSegments, parsedUrl.hostSegments, values, HostSeparator,true) && !"".Equals(HostPattern))
 			{
 				return null;
 			}
 
 			// check Path
-			if (!SegmentsMatchs(pathSegments, parsedUrl.pathSegments, values))
+			if (!SegmentsMatchs(pathSegments, parsedUrl.pathSegments, values, PathDelimiter))
 			{
 				return null;
 			}
 			return values;
 		}
 
-		private bool SegmentsMatchs(IList<string> segments, IList<string> segmentesValues, RouteValueDictionary values)
+		private bool SegmentsMatchs(IList<string> segments, IList<string> segmentesValues, RouteValueDictionary values, char segmentsSeparator, bool haveToMatchSegmentsCount = false)
 		{
+			var collectedSegments = 0;
 			for (int i = 0; i < segments.Count; i++)
 			{
 				bool segmenIsAVariable = IsVariableSegment(segments[i]);
+				if (IsMatchAllSegment(segments[i]))
+				{
+					var sb = new StringBuilder(100);
+					sb.Append(segmentesValues[i]);
+					collectedSegments++;
+					for (int j = i + 1; j < segmentesValues.Count; j++)
+					{
+						sb.Append(segmentsSeparator).Append(segmentesValues[j]);
+						collectedSegments++;
+					}
+					string variableName = GetVariableName(segments[i]);
+					values[variableName] = sb.ToString();
+					break;
+				}
 				object matchSegment;
 				if (segmentesValues.Count <= i)
 				{
@@ -166,8 +183,9 @@ namespace HunabKu.MvcAbsoluteRouter
 					string variableName = GetVariableName(segments[i]);
 					values[variableName] = matchSegment;
 				}
+				collectedSegments++;
 			}
-			return true;
+			return !(segments.Count > 0 && haveToMatchSegmentsCount) || collectedSegments >= segmentesValues.Count;
 		}
 
 		private bool IsVariableSegment(string urlSegment)
@@ -175,9 +193,19 @@ namespace HunabKu.MvcAbsoluteRouter
 			return urlSegment.StartsWith("{") && urlSegment.EndsWith("}");
 		}
 
+		private bool IsMatchAllSegment(string urlSegment)
+		{
+			return urlSegment.StartsWith("{*") && urlSegment.EndsWith("}");
+		}
+
 		private string GetVariableName(string urlSegment)
 		{
-			return urlSegment.Trim('{', '}');
+			string variableName = urlSegment.Trim('{', '}');
+			if(variableName.StartsWith("*"))
+			{
+				variableName = variableName.Substring(1);
+			}
+			return variableName;
 		}
 	}
 }
