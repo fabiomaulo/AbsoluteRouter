@@ -61,14 +61,15 @@ namespace HunabKu.MvcAbsoluteRouter
 			int indexOfSchemeDelimiter = urlPattern.IndexOf(SchemeDelimiter);
 			SchemePattern = string.Empty;
 			string urlCleanedFromScheme = urlPattern;
-			if (indexOfSchemeDelimiter >= 0)
+			bool hasScheme = indexOfSchemeDelimiter >= 0;
+			if (hasScheme)
 			{
 				SchemePattern = urlPattern.Substring(0, indexOfSchemeDelimiter);
 				urlCleanedFromScheme = urlPattern.Substring(indexOfSchemeDelimiter + SchemeDelimiter.Length);
 			}
 			int indexOfFirstSlash = urlCleanedFromScheme.IndexOf(PathDelimiter);
 			int indexOfFirstDot = urlCleanedFromScheme.IndexOf(HostSeparator);
-			bool hasDns = indexOfFirstDot >= 0;
+			bool hasDns = indexOfFirstDot >= 0 || hasScheme;
 			bool hasPath = (hasDns && indexOfFirstSlash > indexOfFirstDot) || !hasDns;
 
 			string hostAndPort = !hasDns ? string.Empty : hasPath ? urlCleanedFromScheme.Substring(0, indexOfFirstSlash) : urlCleanedFromScheme;
