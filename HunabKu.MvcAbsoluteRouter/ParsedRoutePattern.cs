@@ -149,10 +149,6 @@ namespace HunabKu.MvcAbsoluteRouter
 					var sb = new StringBuilder(100);
 					if (segmentesValues.Count <= i)
 					{
-						if (!segmenIsAVariable)
-						{
-							return false;
-						}
 						object matchAllDefault;
 						if (!values.TryGetValue(variableName, out matchAllDefault))
 						{
