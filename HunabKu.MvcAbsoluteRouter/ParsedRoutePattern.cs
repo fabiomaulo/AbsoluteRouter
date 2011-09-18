@@ -118,7 +118,7 @@ namespace HunabKu.MvcAbsoluteRouter
 			{
 				return null;
 			}
-			if (hostSegments.Count != parsedUrl.hostSegments.Count || !SegmentsMatchs(hostSegments, parsedUrl.hostSegments, values))
+			if ((hostSegments.Count != parsedUrl.hostSegments.Count || !SegmentsMatchs(hostSegments, parsedUrl.hostSegments, values)) && !"".Equals(HostPattern))
 			{
 				return null;
 			}

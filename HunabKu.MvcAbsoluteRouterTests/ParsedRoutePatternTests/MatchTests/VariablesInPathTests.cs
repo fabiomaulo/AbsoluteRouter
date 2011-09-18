@@ -44,5 +44,15 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests.MatchTests
 			var actual = parsed.Match(url, new RouteValueDictionary(new { ostia = 50 }));
 			actual.Should().Be.Null();
 		}
+
+		[Test]
+		public void WhenPatternWithoutDomainAndIsLargerAndHasDefaultThenMatchAndReturnVariableInPath()
+		{
+			var parsed = ParsedRoutePattern.Parse("{area}/{id}");
+			var url = "http://acme.com/pizza".AsUri();
+			var actual = parsed.Match(url, new RouteValueDictionary(new { id = 50 }));
+			actual["area"].Should().Be("pizza");
+			actual["id"].Should().Be(50);
+		}
 	}
 }
