@@ -26,5 +26,14 @@ namespace HunabKu.MvcAbsoluteRouterTests.AbsoluteRouteTests
 			routedata.Values["action"].Should().Be("calda");
 			routedata.Values["id"].Should().Be("1");
 		}
+
+		[Test]
+		public void WhenMatchThenAssignRoute()
+		{
+			var route = new AbsoluteRoute("{controller}/{action}/{id}");
+			var context = "http://acme.com/pizza/calda/1".AsUri().ToHttpContext();
+			var routedata = route.GetRouteData(context);
+			routedata.Route.Should().Be.SameInstanceAs(route);
+		}
 	}
 }
