@@ -51,5 +51,15 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests.MatchTests
 			var actual = parsed.Match(url, null);
 			actual["domain"].Should().Be("acme.com");
 		}
+
+		[Test]
+		public void WhenDomainHasMatchAllThenReturnVariablesValues()
+		{
+			var parsed = ParsedRoutePattern.Parse("http://{topLevelDomain}.{*domain}");
+			var url = "http://ar.acme.com/pizza".AsUri();
+			var actual = parsed.Match(url, null);
+			actual["topLevelDomain"].Should().Be("ar");
+			actual["domain"].Should().Be("acme.com");
+		}
 	}
 }
