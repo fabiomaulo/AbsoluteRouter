@@ -2,6 +2,8 @@
 using System.Web;
 using System.Web.Routing;
 using HunabKu.MvcAbsoluteRouter;
+using NUnit.Framework;
+using SharpTestsEx;
 
 namespace HunabKu.MvcAbsoluteRouterTests.AbsoluteRouteTests
 {
@@ -10,28 +12,7 @@ namespace HunabKu.MvcAbsoluteRouterTests.AbsoluteRouteTests
 		private string urlPattern;
 		private ParsedRoutePattern parsedRoute;
 
-		public AbsoluteRoute(string urlPattern, IRouteHandler routeHandler)
-		{
-			UrlPattern = urlPattern;
-			RouteHandler = routeHandler;
-		}
-
-		public AbsoluteRoute(string urlPattern, RouteValueDictionary defaults, IRouteHandler routeHandler)
-		{
-			UrlPattern = urlPattern;
-			Defaults = defaults;
-			RouteHandler = routeHandler;
-		}
-
-		public AbsoluteRoute(string urlPattern, RouteValueDictionary defaults, RouteValueDictionary constraints, IRouteHandler routeHandler)
-		{
-			UrlPattern = urlPattern;
-			Defaults = defaults;
-			Constraints = constraints;
-			RouteHandler = routeHandler;
-		}
-
-		public AbsoluteRoute(string urlPattern, RouteValueDictionary defaults, RouteValueDictionary constraints, RouteValueDictionary dataTokens, IRouteHandler routeHandler)
+		public AbsoluteRoute(string urlPattern, RouteValueDictionary defaults = null, RouteValueDictionary constraints = null, RouteValueDictionary dataTokens = null, IRouteHandler routeHandler = null)
 		{
 			UrlPattern = urlPattern;
 			Defaults = defaults;
@@ -67,32 +48,22 @@ namespace HunabKu.MvcAbsoluteRouterTests.AbsoluteRouteTests
 		{
 			throw new NotImplementedException();
 		}
-
-		public virtual AbsolutePathData GetAbsolutePath(RequestContext requestContext, RouteValueDictionary values)
-		{
-			throw new NotImplementedException();
-		}
 	}
 
-	public class AbsolutePathData
+	public class ConstructorsTests
 	{
-		private readonly RouteValueDictionary dataTokens = new RouteValueDictionary();
-
-		public AbsolutePathData(RouteBase route, Uri uri)
+		[Test]
+		public void WhenNullUrlThenThrows()
 		{
-			Route = route;
-			AbsolutePath = uri;
+			Executing.This(()=> new AbsoluteRoute(null)).Should().Throw();
 		}
 
-		public RouteValueDictionary DataTokens
+		[Test]
+		public void WhenUrlPatternHasValuesThenSetValue()
 		{
-			get { return dataTokens; }
+			string pattern = "{controller}/{action}/{id}";
+			var route = new AbsoluteRoute(pattern);
+			route.UrlPattern.Should().Be(pattern);
 		}
-
-		public RouteBase Route { get; set; }
-
-		public Uri AbsolutePath { get; set; }
 	}
-
-	public class ConstructorsTests {}
 }
