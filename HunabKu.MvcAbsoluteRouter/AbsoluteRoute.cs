@@ -142,6 +142,10 @@ namespace HunabKu.MvcAbsoluteRouter
 					var actualValueString = Convert.ToString(actualValue, CultureInfo.InvariantCulture);
 					path.Add(actualValueString);
 				}
+				else
+				{
+					path.Add(pathSegment);
+				}
 			}
 			string virtualPath;
 			if(parsedRoute.HostSegments.Any())
