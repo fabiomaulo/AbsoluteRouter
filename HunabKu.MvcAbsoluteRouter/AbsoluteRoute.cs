@@ -134,17 +134,13 @@ namespace HunabKu.MvcAbsoluteRouter
 			{
 				defaultScheme = requestContext.HttpContext.Request.Url.Scheme;
 			}
-			var host = GetFullFilledSegments(parsedRoute.HostSegments, values);
-			var path = GetFullFilledSegments(parsedRoute.PathSegments, values);
-			string virtualPath;
-			if(parsedRoute.HostSegments.Any())
-			{
-				virtualPath = (new UriBuilder{ Scheme = defaultScheme, Host = string.Join(".", host), Path = string.Join("/", path)}).ToString();
-			}
-			else
-			{
-				virtualPath = string.Join("/", path);
-			}
+
+			IEnumerable<string> hostSegments = GetFullFilledSegments(parsedRoute.HostSegments, values);
+			IEnumerable<string> pathSegments = GetFullFilledSegments(parsedRoute.PathSegments, values);
+			string path = string.Join("/", pathSegments);
+			string virtualPath = parsedRoute.HostSegments.Any()
+			                     	? (new UriBuilder {Scheme = defaultScheme, Host = string.Join(".", hostSegments), Path = path}).ToString()
+			                     	: path;
 
 			var virtualPathData = new VirtualPathData(this, virtualPath);
 			OverrideMergeDictionary(DataTokens, virtualPathData.DataTokens);
