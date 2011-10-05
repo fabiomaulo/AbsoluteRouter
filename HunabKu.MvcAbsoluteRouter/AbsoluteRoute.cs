@@ -135,20 +135,7 @@ namespace HunabKu.MvcAbsoluteRouter
 				defaultScheme = requestContext.HttpContext.Request.Url.Scheme;
 			}
 			var host = GetFullFilledSegments(parsedRoute.HostSegments, values);
-			var path = new List<string>(20);
-			foreach (var pathSegment in parsedRoute.PathSegments)
-			{
-				object actualValue;
-				if(IsVariableSegment(pathSegment) && values.TryGetValue(GetVariableName(pathSegment), out actualValue))
-				{
-					var actualValueString = Convert.ToString(actualValue, CultureInfo.InvariantCulture);
-					path.Add(actualValueString);
-				}
-				else
-				{
-					path.Add(pathSegment);
-				}
-			}
+			var path = GetFullFilledSegments(parsedRoute.PathSegments, values);
 			string virtualPath;
 			if(parsedRoute.HostSegments.Any())
 			{
