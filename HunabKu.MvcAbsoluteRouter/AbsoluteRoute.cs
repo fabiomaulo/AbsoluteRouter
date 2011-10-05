@@ -125,6 +125,7 @@ namespace HunabKu.MvcAbsoluteRouter
 		public override VirtualPathData GetVirtualPath(RequestContext requestContext, RouteValueDictionary values)
 		{
 			var contextValues = new RouteValueDictionary(requestContext.RouteData.Values);
+			OverrideMergeDictionary(Defaults, contextValues);
 			OverrideMergeDictionary(values, contextValues);
 			if (!MatchConstraints(contextValues))
 			{

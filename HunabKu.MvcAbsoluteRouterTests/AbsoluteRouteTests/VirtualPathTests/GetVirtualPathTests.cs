@@ -109,5 +109,17 @@ namespace HunabKu.MvcAbsoluteRouterTests.AbsoluteRouteTests.VirtualPathTests
 			tokens["a"].Should().Be(1);
 			tokens["b"].Should().Be(2);
 		}
+
+		[Test]
+		public void WhenHostMatchAndRouteHasDefaultsThenCreateAbsolutePathWithDefaults()
+		{
+			var context = "https://acme.com".AsUri().ToHttpContext();
+			var requestContext = new RequestContext(context, new RouteData());
+
+			var route = new AbsoluteRoute("http://{host}.com/{controller}/{action}", defaults: new RouteValueDictionary(new { controller = "Home", action = "Index" }));
+			var virtualPath = route.GetVirtualPath(requestContext, new RouteValueDictionary(new { host = "acme"}));
+			virtualPath.Route.Should().Be.SameInstanceAs(route);
+			virtualPath.VirtualPath.Should().Be("https://acme.com/Home/Index");
+		}
 	}
 }
