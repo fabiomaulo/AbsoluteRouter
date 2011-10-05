@@ -153,21 +153,19 @@ namespace HunabKu.MvcAbsoluteRouter
 
 		private IEnumerable<string> GetFullFilledSegments(IEnumerable<string> patternSegments, RouteValueDictionary values)
 		{
-			var segments = new List<string>(20);
 			foreach (var hostSegment in patternSegments)
 			{
 				object actualValue;
 				if (IsVariableSegment(hostSegment) && values.TryGetValue(GetVariableName(hostSegment), out actualValue))
 				{
 					var actualValueString = Convert.ToString(actualValue, CultureInfo.InvariantCulture);
-					segments.Add(actualValueString);
+					yield return actualValueString;
 				}
 				else
 				{
-					segments.Add(hostSegment);
+					yield return hostSegment;
 				}
 			}
-			return segments;
 		}
 
 		private bool IsVariableSegment(string urlSegment)
