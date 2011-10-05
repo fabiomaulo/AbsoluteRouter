@@ -87,7 +87,7 @@ namespace HunabKu.MvcAbsoluteRouter
 
 			var routeData = new RouteData(this, RouteHandler);
 			// Validate the values
-			if (Constraints != null && !Constraints.All(constraint => constraintsMatchers[constraint.Key](SafeGetValueAsString(constraint.Key, values))))
+			if (!MatchConstraints(values))
 			{
 				return null;
 			}
@@ -96,6 +96,11 @@ namespace HunabKu.MvcAbsoluteRouter
 			OverrideMergeDictionary(DataTokens, routeData.DataTokens);
 
 			return routeData;
+		}
+
+		private bool MatchConstraints(RouteValueDictionary values)
+		{
+			return Constraints == null || Constraints.All(constraint => constraintsMatchers[constraint.Key](SafeGetValueAsString(constraint.Key, values)));
 		}
 
 		private string SafeGetValueAsString(string parameterName, RouteValueDictionary values)
@@ -119,7 +124,7 @@ namespace HunabKu.MvcAbsoluteRouter
 
 		public override VirtualPathData GetVirtualPath(RequestContext requestContext, RouteValueDictionary values)
 		{
-			if (Constraints != null && !Constraints.All(constraint => constraintsMatchers[constraint.Key](SafeGetValueAsString(constraint.Key, values))))
+			if (!MatchConstraints(values))
 			{
 				return null;
 			}
