@@ -119,6 +119,11 @@ namespace HunabKu.MvcAbsoluteRouter
 
 		public override VirtualPathData GetVirtualPath(RequestContext requestContext, RouteValueDictionary values)
 		{
+			if (Constraints != null && !Constraints.All(constraint => constraintsMatchers[constraint.Key](SafeGetValueAsString(constraint.Key, values))))
+			{
+				return null;
+			}
+
 			string defaultScheme= null;
 			if (requestContext.HttpContext.Request.Url != null)
 			{
