@@ -134,20 +134,7 @@ namespace HunabKu.MvcAbsoluteRouter
 			{
 				defaultScheme = requestContext.HttpContext.Request.Url.Scheme;
 			}
-			var host = new List<string>(20);
-			foreach (var hostSegment in parsedRoute.HostSegments)
-			{
-				object actualValue;
-				if (IsVariableSegment(hostSegment) && values.TryGetValue(GetVariableName(hostSegment), out actualValue))
-				{
-					var actualValueString = Convert.ToString(actualValue, CultureInfo.InvariantCulture);
-					host.Add(actualValueString);
-				}
-				else
-				{
-					host.Add(hostSegment);
-				}
-			}
+			var host = GetFullFilledSegments(values, parsedRoute.HostSegments);
 			var path = new List<string>(20);
 			foreach (var pathSegment in parsedRoute.PathSegments)
 			{
@@ -176,6 +163,25 @@ namespace HunabKu.MvcAbsoluteRouter
 			OverrideMergeDictionary(DataTokens, virtualPathData.DataTokens);
 
 			return virtualPathData;
+		}
+
+		private List<string> GetFullFilledSegments(RouteValueDictionary values, IEnumerable<string> patternSegments)
+		{
+			var host = new List<string>(20);
+			foreach (var hostSegment in patternSegments)
+			{
+				object actualValue;
+				if (IsVariableSegment(hostSegment) && values.TryGetValue(GetVariableName(hostSegment), out actualValue))
+				{
+					var actualValueString = Convert.ToString(actualValue, CultureInfo.InvariantCulture);
+					host.Add(actualValueString);
+				}
+				else
+				{
+					host.Add(hostSegment);
+				}
+			}
+			return host;
 		}
 
 		private bool IsVariableSegment(string urlSegment)
