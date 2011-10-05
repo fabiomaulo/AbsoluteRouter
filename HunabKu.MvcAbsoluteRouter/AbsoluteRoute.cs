@@ -1,4 +1,7 @@
 using System;
+using System.Globalization;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Routing;
 
@@ -46,10 +49,38 @@ namespace HunabKu.MvcAbsoluteRouter
 			}
 
 			var routeData = new RouteData(this, RouteHandler);
+			// Validate the values
+			if (!MatchConstraints(values, RouteDirection.IncomingRequest))
+			{
+				return null;
+			}
+
 			OverrideMergeDictionary(values, routeData.Values);
 			OverrideMergeDictionary(DataTokens, routeData.DataTokens);
 
 			return routeData;
+		}
+
+		private bool MatchConstraints(RouteValueDictionary values, RouteDirection routeDirection)
+		{
+			return Constraints == null || Constraints.All(constraint => MatchConstraint(constraint.Value, constraint.Key, values, routeDirection));
+		}
+
+		private bool MatchConstraint(object constraint, string parameterName, RouteValueDictionary values, RouteDirection routeDirection)
+		{
+			// Treat the constraint as Regex template.
+			var constraintsRule = constraint as string;
+			if (constraintsRule == null)
+			{
+				throw new InvalidOperationException(string.Format("The constraint entry '{0}' on the route with URL pattern '{1}' must have a string value.", parameterName, UrlPattern));
+			}
+
+			object parameterValue;
+			values.TryGetValue(parameterName, out parameterValue);
+			string parameterValueString = Convert.ToString(parameterValue, CultureInfo.InvariantCulture);
+			string constraintsRegEx = "^(" + constraintsRule + ")$";
+			return Regex.IsMatch(parameterValueString, constraintsRegEx,
+					RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
 		}
 
 		private static void OverrideMergeDictionary(RouteValueDictionary source, RouteValueDictionary destination)

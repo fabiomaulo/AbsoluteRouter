@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="AbsoluteRouteTests\ConstructorsTests.cs" />
     <Compile Include="AbsoluteRouteTests\GetRouteDataBaseTests.cs" />
+    <Compile Include="AbsoluteRouteTests\StringConstraintsTests.cs" />
     <Compile Include="ParsedRoutePatternTests\ConstructorsTests.cs" />
     <Compile Include="ParsedRoutePatternTests\DnsSafeHostPatternTests.cs" />
     <Compile Include="ParsedRoutePatternTests\HostSegmentsTests.cs" />
