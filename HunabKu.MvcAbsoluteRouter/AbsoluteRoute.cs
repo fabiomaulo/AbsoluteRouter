@@ -99,15 +99,13 @@ namespace HunabKu.MvcAbsoluteRouter
 
 		private bool MatchConstraints(RouteValueDictionary values, RouteDirection routeDirection)
 		{
-			return Constraints == null || Constraints.All(constraint => MatchConstraint(constraint.Key, values, routeDirection));
-		}
-
-		private bool MatchConstraint(string parameterName, RouteValueDictionary values, RouteDirection routeDirection)
-		{
-			object parameterValue;
-			values.TryGetValue(parameterName, out parameterValue);
-			string parameterValueString = Convert.ToString(parameterValue, CultureInfo.InvariantCulture);
-			return constraintsMatchers[parameterName](parameterValueString);
+			return Constraints == null ||
+			       Constraints.Select(c =>
+			                          {
+			                          	object parameterValue;
+			                          	values.TryGetValue(c.Key, out parameterValue);
+			                          	return new Tuple<string, string>(c.Key, Convert.ToString(parameterValue, CultureInfo.InvariantCulture));
+			                          }).All(t => constraintsMatchers[t.Item1](t.Item2));
 		}
 
 		private static void OverrideMergeDictionary(RouteValueDictionary source, RouteValueDictionary destination)
