@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -11,6 +12,9 @@ namespace HunabKu.MvcAbsoluteRouter
 	{
 		private string urlPattern;
 		private ParsedRoutePattern parsedRoute;
+		private RouteValueDictionary constraints;
+		private IDictionary<string, Func<string, bool>> constraintsMatchers;
+		private IDictionary<string, Regex> constraintsExpressions;
 
 		public AbsoluteRoute(string urlPattern, RouteValueDictionary defaults = null, RouteValueDictionary constraints = null, RouteValueDictionary dataTokens = null, IRouteHandler routeHandler = null)
 		{
@@ -21,7 +25,39 @@ namespace HunabKu.MvcAbsoluteRouter
 			RouteHandler = routeHandler;
 		}
 
-		public RouteValueDictionary Constraints { get; set; }
+		public RouteValueDictionary Constraints
+		{
+			get { return constraints; }
+			set
+			{
+				constraints = value;
+				CreateConstraintsMatchers();
+			}
+		}
+
+		private void CreateConstraintsMatchers()
+		{
+			if(constraints == null)
+			{
+				constraintsMatchers = null;
+				constraintsExpressions= null;
+				return;
+			}
+			constraintsMatchers = new Dictionary<string, Func<string, bool>>(constraints.Count);
+			constraintsExpressions = new Dictionary<string, Regex>(constraints.Count);
+			foreach (var constraint in constraints)
+			{
+				var parameterName = constraint.Key;
+				var constraintsRule = constraint.Value as string;
+				if (constraintsRule == null)
+				{
+					throw new InvalidOperationException(string.Format("The constraint entry '{0}' on the route with URL pattern '{1}' must have a string value.", parameterName, UrlPattern));
+				}
+				string constraintsRegEx = "^(" + constraintsRule + ")$";
+				constraintsExpressions[parameterName] = new Regex(constraintsRegEx, RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+				constraintsMatchers[parameterName] = parameterValue => constraintsExpressions[parameterName].IsMatch(parameterValue);
+			}
+		}
 
 		public RouteValueDictionary DataTokens { get; set; }
 
@@ -63,24 +99,15 @@ namespace HunabKu.MvcAbsoluteRouter
 
 		private bool MatchConstraints(RouteValueDictionary values, RouteDirection routeDirection)
 		{
-			return Constraints == null || Constraints.All(constraint => MatchConstraint(constraint.Value, constraint.Key, values, routeDirection));
+			return Constraints == null || Constraints.All(constraint => MatchConstraint(constraint.Key, values, routeDirection));
 		}
 
-		private bool MatchConstraint(object constraint, string parameterName, RouteValueDictionary values, RouteDirection routeDirection)
+		private bool MatchConstraint(string parameterName, RouteValueDictionary values, RouteDirection routeDirection)
 		{
-			// Treat the constraint as Regex template.
-			var constraintsRule = constraint as string;
-			if (constraintsRule == null)
-			{
-				throw new InvalidOperationException(string.Format("The constraint entry '{0}' on the route with URL pattern '{1}' must have a string value.", parameterName, UrlPattern));
-			}
-
 			object parameterValue;
 			values.TryGetValue(parameterName, out parameterValue);
 			string parameterValueString = Convert.ToString(parameterValue, CultureInfo.InvariantCulture);
-			string constraintsRegEx = "^(" + constraintsRule + ")$";
-			return Regex.IsMatch(parameterValueString, constraintsRegEx,
-					RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+			return constraintsMatchers[parameterName](parameterValueString);
 		}
 
 		private static void OverrideMergeDictionary(RouteValueDictionary source, RouteValueDictionary destination)
