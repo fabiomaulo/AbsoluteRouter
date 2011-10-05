@@ -165,23 +165,23 @@ namespace HunabKu.MvcAbsoluteRouter
 			return virtualPathData;
 		}
 
-		private List<string> GetFullFilledSegments(RouteValueDictionary values, IEnumerable<string> patternSegments)
+		private IEnumerable<string> GetFullFilledSegments(RouteValueDictionary values, IEnumerable<string> patternSegments)
 		{
-			var host = new List<string>(20);
+			var segments = new List<string>(20);
 			foreach (var hostSegment in patternSegments)
 			{
 				object actualValue;
 				if (IsVariableSegment(hostSegment) && values.TryGetValue(GetVariableName(hostSegment), out actualValue))
 				{
 					var actualValueString = Convert.ToString(actualValue, CultureInfo.InvariantCulture);
-					host.Add(actualValueString);
+					segments.Add(actualValueString);
 				}
 				else
 				{
-					host.Add(hostSegment);
+					segments.Add(hostSegment);
 				}
 			}
-			return host;
+			return segments;
 		}
 
 		private bool IsVariableSegment(string urlSegment)
