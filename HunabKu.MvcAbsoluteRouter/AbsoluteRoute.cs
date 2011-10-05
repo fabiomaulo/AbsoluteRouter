@@ -86,7 +86,7 @@ namespace HunabKu.MvcAbsoluteRouter
 
 			var routeData = new RouteData(this, RouteHandler);
 			// Validate the values
-			if (!MatchConstraints(values, RouteDirection.IncomingRequest))
+			if (!MatchConstraints(values))
 			{
 				return null;
 			}
@@ -97,7 +97,7 @@ namespace HunabKu.MvcAbsoluteRouter
 			return routeData;
 		}
 
-		private bool MatchConstraints(RouteValueDictionary values, RouteDirection routeDirection)
+		private bool MatchConstraints(RouteValueDictionary values)
 		{
 			return Constraints == null || Constraints.All(constraint => constraintsMatchers[constraint.Key](SafeGetValueAsString(constraint.Key, values)));
 		}
