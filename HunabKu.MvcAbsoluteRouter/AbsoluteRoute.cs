@@ -134,7 +134,7 @@ namespace HunabKu.MvcAbsoluteRouter
 			{
 				defaultScheme = requestContext.HttpContext.Request.Url.Scheme;
 			}
-			var host = GetFullFilledSegments(values, parsedRoute.HostSegments);
+			var host = GetFullFilledSegments(parsedRoute.HostSegments, values);
 			var path = new List<string>(20);
 			foreach (var pathSegment in parsedRoute.PathSegments)
 			{
@@ -165,7 +165,7 @@ namespace HunabKu.MvcAbsoluteRouter
 			return virtualPathData;
 		}
 
-		private IEnumerable<string> GetFullFilledSegments(RouteValueDictionary values, IEnumerable<string> patternSegments)
+		private IEnumerable<string> GetFullFilledSegments(IEnumerable<string> patternSegments, RouteValueDictionary values)
 		{
 			var segments = new List<string>(20);
 			foreach (var hostSegment in patternSegments)
