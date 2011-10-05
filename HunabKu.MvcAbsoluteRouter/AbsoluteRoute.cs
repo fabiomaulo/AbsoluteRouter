@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Routing;
@@ -118,7 +119,28 @@ namespace HunabKu.MvcAbsoluteRouter
 
 		public override VirtualPathData GetVirtualPath(RequestContext requestContext, RouteValueDictionary values)
 		{
-			return null;
+			var path = new List<string>(20);
+			foreach (var pathSegment in parsedRoute.PathSegments)
+			{
+				object actualValue;
+				if(IsVariableSegment(pathSegment) && values.TryGetValue(GetVariableName(pathSegment), out actualValue))
+				{
+					var actualValueString = Convert.ToString(actualValue, CultureInfo.InvariantCulture);
+					path.Add(actualValueString);
+				}
+			}
+			return new VirtualPathData(this, string.Join("/", path));
 		}
+
+		private bool IsVariableSegment(string urlSegment)
+		{
+			return urlSegment.StartsWith("{") && urlSegment.EndsWith("}");
+		}
+
+		private string GetVariableName(string urlSegment)
+		{
+			return urlSegment.Trim('{', '}');
+		}
+
 	}
 }
