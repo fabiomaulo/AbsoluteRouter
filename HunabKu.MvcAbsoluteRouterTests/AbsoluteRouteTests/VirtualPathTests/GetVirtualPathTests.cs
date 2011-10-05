@@ -21,6 +21,18 @@ namespace HunabKu.MvcAbsoluteRouterTests.AbsoluteRouteTests.VirtualPathTests
 		}
 
 		[Test]
+		public void WhenPathMatchCaseInsensitiveThenCreateRelativePath()
+		{
+			var context = "http://acme.com".AsUri().ToHttpContext();
+			var requestContext = new RequestContext(context, new RouteData());
+
+			var route = new AbsoluteRoute("{controller}/{action}/{id}");
+			var virtualPath = route.GetVirtualPath(requestContext, new RouteValueDictionary(new { Controller = "pizza", Action = "calda", ID = 1 }));
+			virtualPath.Route.Should().Be.SameInstanceAs(route);
+			virtualPath.VirtualPath.Should().Be("pizza/calda/1");
+		}
+
+		[Test]
 		public void WhenPathContainsCostantsThenCreateRelativePath()
 		{
 			var context = "http://acme.com".AsUri().ToHttpContext();
