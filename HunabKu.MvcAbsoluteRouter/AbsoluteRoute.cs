@@ -119,6 +119,20 @@ namespace HunabKu.MvcAbsoluteRouter
 
 		public override VirtualPathData GetVirtualPath(RequestContext requestContext, RouteValueDictionary values)
 		{
+			var host = new List<string>(20);
+			foreach (var hostSegment in parsedRoute.HostSegments)
+			{
+				object actualValue;
+				if (IsVariableSegment(hostSegment) && values.TryGetValue(GetVariableName(hostSegment), out actualValue))
+				{
+					var actualValueString = Convert.ToString(actualValue, CultureInfo.InvariantCulture);
+					host.Add(actualValueString);
+				}
+				else
+				{
+					host.Add(hostSegment);
+				}
+			}
 			var path = new List<string>(20);
 			foreach (var pathSegment in parsedRoute.PathSegments)
 			{
@@ -129,7 +143,17 @@ namespace HunabKu.MvcAbsoluteRouter
 					path.Add(actualValueString);
 				}
 			}
-			return new VirtualPathData(this, string.Join("/", path));
+			string virtualPath;
+			if(parsedRoute.HostSegments.Any())
+			{
+				virtualPath = (new UriBuilder{ Scheme = "http", Host = string.Join(".", host), Path = string.Join("/", path)}).ToString();
+			}
+			else
+			{
+				virtualPath = string.Join("/", path);
+			}
+			
+			return new VirtualPathData(this, virtualPath);
 		}
 
 		private bool IsVariableSegment(string urlSegment)
