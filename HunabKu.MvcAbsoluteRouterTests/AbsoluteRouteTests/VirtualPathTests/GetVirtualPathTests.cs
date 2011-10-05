@@ -55,5 +55,19 @@ namespace HunabKu.MvcAbsoluteRouterTests.AbsoluteRouteTests.VirtualPathTests
 			virtualPath.Route.Should().Be.SameInstanceAs(route);
 			virtualPath.VirtualPath.Should().Be("https://acme.com/pizza");
 		}
+
+		[Test]
+		public void WhenMatchRouteContainsDataTokensThenCopyDataTokens()
+		{
+			var context = "http://acme.com".AsUri().ToHttpContext();
+			var requestContext = new RequestContext(context, new RouteData());
+
+			var route = new AbsoluteRoute("{controller}/{action}/{id}", dataTokens: new RouteValueDictionary(new { a = 1, b = 2 }));
+			var virtualPath = route.GetVirtualPath(requestContext, new RouteValueDictionary(new { controller = "pizza", action = "calda", id = 1 }));
+			var tokens = virtualPath.DataTokens;
+			tokens.Should().Not.Be.Null();
+			tokens["a"].Should().Be(1);
+			tokens["b"].Should().Be(2);
+		}
 	}
 }

@@ -161,8 +161,11 @@ namespace HunabKu.MvcAbsoluteRouter
 			{
 				virtualPath = string.Join("/", path);
 			}
-			
-			return new VirtualPathData(this, virtualPath);
+
+			var virtualPathData = new VirtualPathData(this, virtualPath);
+			OverrideMergeDictionary(DataTokens, virtualPathData.DataTokens);
+
+			return virtualPathData;
 		}
 
 		private bool IsVariableSegment(string urlSegment)
