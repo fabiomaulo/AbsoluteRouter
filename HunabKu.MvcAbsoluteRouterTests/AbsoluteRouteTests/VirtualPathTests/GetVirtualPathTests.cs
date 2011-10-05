@@ -4,7 +4,7 @@ using NUnit.Framework;
 using SharpTestsEx;
 using SharpTestsEx.Mvc;
 
-namespace HunabKu.MvcAbsoluteRouterTests.AbsoluteRouteTests
+namespace HunabKu.MvcAbsoluteRouterTests.AbsoluteRouteTests.VirtualPathTests
 {
 	public class GetVirtualPathTests
 	{
