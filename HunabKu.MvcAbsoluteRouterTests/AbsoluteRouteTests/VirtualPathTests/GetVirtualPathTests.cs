@@ -43,5 +43,17 @@ namespace HunabKu.MvcAbsoluteRouterTests.AbsoluteRouteTests.VirtualPathTests
 			virtualPath.Route.Should().Be.SameInstanceAs(route);
 			virtualPath.VirtualPath.Should().Be("http://acme.com/pizza/calda/1");
 		}
+
+		[Test]
+		public void WhenHostMatchThenCreateAbsolutePathWithSchemeFromContext()
+		{
+			var context = "https://acme.com".AsUri().ToHttpContext();
+			var requestContext = new RequestContext(context, new RouteData());
+
+			var route = new AbsoluteRoute("{host}.com/{controller}");
+			var virtualPath = route.GetVirtualPath(requestContext, new RouteValueDictionary(new { host="acme", controller = "pizza"}));
+			virtualPath.Route.Should().Be.SameInstanceAs(route);
+			virtualPath.VirtualPath.Should().Be("https://acme.com/pizza");
+		}
 	}
 }
