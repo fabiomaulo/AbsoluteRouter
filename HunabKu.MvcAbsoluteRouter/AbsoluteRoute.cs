@@ -125,7 +125,6 @@ namespace HunabKu.MvcAbsoluteRouter
 		public override VirtualPathData GetVirtualPath(RequestContext requestContext, RouteValueDictionary values)
 		{
 			var contextValues = new RouteValueDictionary(requestContext.RouteData.Values);
-			OverrideMergeDictionary(Defaults, contextValues);
 			OverrideMergeDictionary(values, contextValues);
 			if (!MatchConstraints(contextValues))
 			{
@@ -138,8 +137,8 @@ namespace HunabKu.MvcAbsoluteRouter
 				defaultScheme = requestContext.HttpContext.Request.Url.Scheme;
 			}
 
-			IEnumerable<string> hostSegments = GetFullFilledSegments(parsedRoute.HostSegments, contextValues);
-			IEnumerable<string> pathSegments = GetFullFilledSegments(parsedRoute.PathSegments, contextValues);
+			IEnumerable<string> hostSegments = GetFullFilledSegments(parsedRoute.HostSegments, contextValues, Defaults, true);
+			IEnumerable<string> pathSegments = GetFullFilledSegments(parsedRoute.PathSegments, contextValues, Defaults);
 			string path = string.Join("/", pathSegments);
 			string virtualPath = parsedRoute.HostSegments.Any()
 			                     	? (new UriBuilder {Scheme = defaultScheme, Host = string.Join(".", hostSegments), Path = path}).ToString()
@@ -151,12 +150,17 @@ namespace HunabKu.MvcAbsoluteRouter
 			return virtualPathData;
 		}
 
-		private IEnumerable<string> GetFullFilledSegments(IEnumerable<string> patternSegments, RouteValueDictionary values)
+		private IEnumerable<string> GetFullFilledSegments(IEnumerable<string> patternSegments, RouteValueDictionary values, RouteValueDictionary defaults, bool forceUsageOfDefaultWhereNoValueAvailable = false)
 		{
+			var availableValues = new RouteValueDictionary(values);
+			if (forceUsageOfDefaultWhereNoValueAvailable)
+			{
+				OverrideMergeDictionary(defaults, availableValues);
+			}
 			foreach (var segment in patternSegments)
 			{
 				object actualValue;
-				if (IsVariableSegment(segment) && values.TryGetValue(GetVariableName(segment), out actualValue))
+				if (IsVariableSegment(segment) && availableValues.TryGetValue(GetVariableName(segment), out actualValue))
 				{
 					var actualValueString = Convert.ToString(actualValue, CultureInfo.InvariantCulture);
 					yield return actualValueString;
