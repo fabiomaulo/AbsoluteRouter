@@ -300,10 +300,7 @@ namespace HunabKu.MvcAbsoluteRouter
 						if (pendingSubstitutions.Count > 0)
 						{
 							// return pending segments with defaults
-							foreach (string pendingSubstitution in pendingSubstitutions)
-							{
-								result.Add(pendingSubstitution);
-							}
+							result.AddRange(pendingSubstitutions);
 							pendingSubstitutions.Clear();
 						}
 						usedParametersNames.Add(variableName);
