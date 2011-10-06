@@ -163,7 +163,8 @@ namespace HunabKu.MvcAbsoluteRouter
 				if (IsVariableSegment(segment))
 				{
 					object actualValue;
-					if (availableValues.TryGetValue(GetVariableName(segment), out actualValue))
+					var variableName = GetVariableName(segment);
+					if (availableValues.TryGetValue(variableName, out actualValue))
 					{
 						if (pendingSubstitutions.Count > 0)
 						{
@@ -177,7 +178,7 @@ namespace HunabKu.MvcAbsoluteRouter
 						var actualValueString = Convert.ToString(actualValue, CultureInfo.InvariantCulture);
 						yield return actualValueString;
 					}
-					else if (defaults.TryGetValue(GetVariableName(segment), out actualValue))
+					else if (defaults.TryGetValue(variableName, out actualValue))
 					{
 						// enlist the availability of a default
 						pendingSubstitutions.Add(Convert.ToString(actualValue, CultureInfo.InvariantCulture));
