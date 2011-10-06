@@ -167,6 +167,7 @@ namespace HunabKu.MvcAbsoluteRouter
 			var parametersToUseInQuerystring = new HashSet<string>(values.Keys, StringComparer.OrdinalIgnoreCase);
 			parametersToUseInQuerystring.ExceptWith(usedParametersNames);
 			string queryString= GetQueryForUnusedParameters(values, parametersToUseInQuerystring);
+
 			string virtualPath = parsedRoute.HostSegments.Any()
 			                     	? (new UriBuilder {Scheme = defaultScheme, Host = host, Path = path, Query = queryString.TrimStart('?')}).ToString()
 			                     	: path + queryString;
