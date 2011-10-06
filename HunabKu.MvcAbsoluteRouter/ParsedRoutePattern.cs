@@ -54,6 +54,11 @@ namespace HunabKu.MvcAbsoluteRouter
 
 		public IEnumerable<KeyValuePair<string, string>> QuerySegments { get; private set; }
 
+		public bool HasHostPattern
+		{
+			get { return !string.IsNullOrEmpty(HostPattern); }
+		}
+
 		public static ParsedRoutePattern Parse(string pattern)
 		{
 			return new ParsedRoutePattern(pattern);

@@ -111,7 +111,16 @@ namespace HunabKu.MvcAbsoluteRouter
 
 		public override VirtualPathData GetVirtualPath(RequestContext requestContext, RouteValueDictionary values)
 		{
+			Uri requestUrl = requestContext.HttpContext.Request.Url;
+			var defaultScheme = requestUrl != null ? requestUrl.Scheme : string.Empty;
+
 			var contextValues = new RouteValueDictionary(requestContext.RouteData.Values);
+			if (parsedRoute.HasHostPattern && requestUrl != null)
+			{
+				var pattern = (string.IsNullOrEmpty(defaultScheme) ? "http://" : defaultScheme+"://") + parsedRoute.HostPattern;
+				var parsedHostRoute = ParsedRoutePattern.Parse(pattern);
+				contextValues.MergeWith(parsedHostRoute.Match(requestUrl, null));
+			}
 			contextValues.OverrideMergeWith(values);
 
 			if (!MatchConstraints(contextValues))
@@ -119,8 +128,7 @@ namespace HunabKu.MvcAbsoluteRouter
 				return null;
 			}
 
-			Uri requestUrl = requestContext.HttpContext.Request.Url;
-			string virtualPath = parsedRoute.CreateUrlWhenMatch(requestUrl != null ? requestUrl.Scheme : string.Empty, contextValues, Defaults, values);
+			string virtualPath = parsedRoute.CreateUrlWhenMatch(defaultScheme, contextValues, Defaults, values);
 			if (virtualPath == null)
 			{
 				return null;
