@@ -319,6 +319,7 @@ namespace HunabKu.MvcAbsoluteRouter
 					}
 					else
 					{
+						// the parameter is required but no value is available: the pattern does not match
 						filledSegments= new string[0];
 						return false;
 					}
