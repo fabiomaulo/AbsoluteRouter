@@ -240,8 +240,8 @@ namespace HunabKu.MvcAbsoluteRouter
 			{
 				return null;
 			}
-			string host = string.Join(".", hostFilledSegments);
-			string path = string.Join("/", pathFilledSegments);
+			string host = string.Join(HostSeparator.ToString(), hostFilledSegments);
+			string path = string.Join(PathDelimiter.ToString(), pathFilledSegments);
 
 			var parametersToUseInQuerystring = new HashSet<string>(values.Keys, StringComparer.OrdinalIgnoreCase);
 			parametersToUseInQuerystring.ExceptWith(usedParametersNames);
@@ -264,7 +264,7 @@ namespace HunabKu.MvcAbsoluteRouter
 					object value;
 					if (values.TryGetValue(unusedNewValue, out value))
 					{
-						queryStringBuilder.Append(firstParam ? '?' : '&');
+						queryStringBuilder.Append(firstParam ? QueryDelimiter : QuerySeparator);
 						firstParam = false;
 						queryStringBuilder.Append(Uri.EscapeDataString(unusedNewValue));
 						queryStringBuilder.Append('=');
