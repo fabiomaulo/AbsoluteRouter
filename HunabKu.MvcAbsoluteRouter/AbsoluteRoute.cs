@@ -165,11 +165,15 @@ namespace HunabKu.MvcAbsoluteRouter
 					object actualValue;
 					if (availableValues.TryGetValue(GetVariableName(segment), out actualValue))
 					{
-						foreach (var pendingSubstitution in pendingSubstitutions)
+						if (pendingSubstitutions.Count > 0)
 						{
-							yield return pendingSubstitution;
+							// return pending segments with defaults
+							foreach (var pendingSubstitution in pendingSubstitutions)
+							{
+								yield return pendingSubstitution;
+							}
+							pendingSubstitutions.Clear();
 						}
-						pendingSubstitutions.Clear();
 						var actualValueString = Convert.ToString(actualValue, CultureInfo.InvariantCulture);
 						yield return actualValueString;
 					}
