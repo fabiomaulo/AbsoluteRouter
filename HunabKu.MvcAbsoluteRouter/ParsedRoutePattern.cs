@@ -322,6 +322,5 @@ namespace HunabKu.MvcAbsoluteRouter
 				}
 			}
 		}
-
 	}
 }
