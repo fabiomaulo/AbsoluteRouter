@@ -52,6 +52,7 @@
     <Compile Include="AbsoluteRouteTests\GetRouteDataBaseTests.cs" />
     <Compile Include="AbsoluteRouteTests\VirtualPathTests\GetVirtualPathTests.cs" />
     <Compile Include="AbsoluteRouteTests\StringConstraintsTests.cs" />
+    <Compile Include="AbsoluteRouteTests\VirtualPathTests\NoMatchsTests.cs" />
     <Compile Include="AbsoluteRouteTests\VirtualPathTests\QueryStringTests.cs" />
     <Compile Include="AbsoluteRouteTests\VirtualPathTests\StringConstraintsTests.cs" />
     <Compile Include="AbsoluteRouteTests\VirtualPathTests\UsageOfDefaultsTests.cs" />

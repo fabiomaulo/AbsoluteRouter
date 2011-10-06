@@ -140,6 +140,7 @@ namespace HunabKu.MvcAbsoluteRouter
 			{
 				values = new RouteValueDictionary();
 			}
+			var defaultValues = Defaults ?? new RouteValueDictionary();
 			var contextValues = new RouteValueDictionary(requestContext.RouteData.Values);
 			OverrideMergeDictionary(values, contextValues);
 			if (!MatchConstraints(contextValues))
@@ -153,8 +154,13 @@ namespace HunabKu.MvcAbsoluteRouter
 				defaultScheme = requestContext.HttpContext.Request.Url.Scheme;
 			}
 			HashSet<string> usedParametersNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			IEnumerable<string> hostSegments = GetFullFilledSegments(parsedRoute.HostSegments, contextValues, Defaults, usedParametersNames, true);
-			IEnumerable<string> pathSegments = GetFullFilledSegments(parsedRoute.PathSegments, contextValues, Defaults, usedParametersNames);
+			var hostSegments = GetFullFilledSegments(parsedRoute.HostSegments, contextValues, defaultValues, usedParametersNames, true).ToArray();
+			var pathSegments = GetFullFilledSegments(parsedRoute.PathSegments, contextValues, defaultValues, usedParametersNames).ToArray();
+			bool hasUnreachableParameter = hostSegments.Concat(pathSegments).Any(x=> IsVariableSegment(x));
+			if(hasUnreachableParameter)
+			{
+				return null;
+			}
 			string host = string.Join(".", hostSegments);
 			string path = string.Join("/", pathSegments);
 			
@@ -228,6 +234,10 @@ namespace HunabKu.MvcAbsoluteRouter
 						usedParametersNames.Add(variableName);
 						// enlist the availability of a default
 						pendingSubstitutions.Add(Convert.ToString(actualValue, CultureInfo.InvariantCulture));
+					}
+					else
+					{
+						yield return segment;
 					}
 				}
 				else
