@@ -18,7 +18,7 @@ namespace HunabKu.MvcAbsoluteRouterTests.AbsoluteRouteTests.VirtualPathTests
 			var route = new AbsoluteRoute("http://{host}.com/{controller}/{action}", defaults: new RouteValueDictionary(new { controller = "Home", action = "Index" }));
 			var virtualPath = route.GetVirtualPath(requestContext, new RouteValueDictionary(new { host = "acme" }));
 			virtualPath.Route.Should().Be.SameInstanceAs(route);
-			virtualPath.VirtualPath.Should().Be("https://acme.com");
+			virtualPath.VirtualPath.Should().Be("https://acme.com/");
 		}
 
 		[Test]
@@ -57,7 +57,7 @@ namespace HunabKu.MvcAbsoluteRouterTests.AbsoluteRouteTests.VirtualPathTests
 			var route = new AbsoluteRoute("http://{host}.com/{controller}/{action}", defaults: new RouteValueDictionary(new {host="acme", controller = "Home", action = "Index" }));
 			var virtualPath = route.GetVirtualPath(requestContext, null);
 			virtualPath.Route.Should().Be.SameInstanceAs(route);
-			virtualPath.VirtualPath.Should().Be("https://acme.com");
+			virtualPath.VirtualPath.Should().Be("https://acme.com/");
 		}
 	}
 }

@@ -152,6 +152,7 @@ namespace HunabKu.MvcAbsoluteRouter
 
 		private IEnumerable<string> GetFullFilledSegments(IEnumerable<string> patternSegments, RouteValueDictionary values, RouteValueDictionary defaults, bool forceUsageOfDefaultWhereNoValueAvailable = false)
 		{
+			List<string> pendingSubstitutions = new List<string>(10);
 			var availableValues = new RouteValueDictionary(values);
 			if (forceUsageOfDefaultWhereNoValueAvailable)
 			{
@@ -159,11 +160,24 @@ namespace HunabKu.MvcAbsoluteRouter
 			}
 			foreach (var segment in patternSegments)
 			{
-				object actualValue;
-				if (IsVariableSegment(segment) && availableValues.TryGetValue(GetVariableName(segment), out actualValue))
+				if (IsVariableSegment(segment))
 				{
-					var actualValueString = Convert.ToString(actualValue, CultureInfo.InvariantCulture);
-					yield return actualValueString;
+					object actualValue;
+					if (availableValues.TryGetValue(GetVariableName(segment), out actualValue))
+					{
+						foreach (var pendingSubstitution in pendingSubstitutions)
+						{
+							yield return pendingSubstitution;
+						}
+						pendingSubstitutions.Clear();
+						var actualValueString = Convert.ToString(actualValue, CultureInfo.InvariantCulture);
+						yield return actualValueString;
+					}
+					else if (defaults.TryGetValue(GetVariableName(segment), out actualValue))
+					{
+						// enlist the availability of a default
+						pendingSubstitutions.Add(Convert.ToString(actualValue, CultureInfo.InvariantCulture));
+					}
 				}
 				else
 				{
