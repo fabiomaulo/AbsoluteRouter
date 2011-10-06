@@ -87,7 +87,7 @@ namespace HunabKu.MvcAbsoluteRouter
 
 		private void ExtractSegments()
 		{
-			// TODO : validation of segments (for example the match-all segment should be the last os a section)
+			// TODO : validation of segments (for example the match-all segment should be the last of a section)
 			SchemeSegment = SchemePattern;
 			hostSegments = HostPattern == "" ? new string[0] : HostPattern.Split(HostSeparator).ToArray();
 			pathSegments = PathPattern == "" ? new string[0] : PathPattern.Split(PathDelimiter).ToArray();
