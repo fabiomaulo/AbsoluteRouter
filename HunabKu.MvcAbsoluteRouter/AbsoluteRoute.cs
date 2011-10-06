@@ -130,7 +130,7 @@ namespace HunabKu.MvcAbsoluteRouter
 				return null;
 			}
 
-			string defaultScheme= null;
+			string defaultScheme= string.Empty;
 			if (requestContext.HttpContext.Request.Url != null)
 			{
 				defaultScheme = requestContext.HttpContext.Request.Url.Scheme;
