@@ -111,11 +111,6 @@ namespace HunabKu.MvcAbsoluteRouter
 
 		public override VirtualPathData GetVirtualPath(RequestContext requestContext, RouteValueDictionary values)
 		{
-			if (values == null)
-			{
-				values = new RouteValueDictionary();
-			}
-			var defaultValues = Defaults ?? new RouteValueDictionary();
 			var contextValues = new RouteValueDictionary(requestContext.RouteData.Values);
 			contextValues.OverrideMergeWith(values);
 
@@ -124,34 +119,48 @@ namespace HunabKu.MvcAbsoluteRouter
 				return null;
 			}
 
-			string defaultScheme= string.Empty;
-			if (requestContext.HttpContext.Request.Url != null)
+			var requestUrl = requestContext.HttpContext.Request.Url;
+			string virtualPath = CreateUrlWhenMatch(requestUrl != null ? requestUrl.Scheme : string.Empty, contextValues, Defaults, values);
+			if(virtualPath == null)
 			{
-				defaultScheme = requestContext.HttpContext.Request.Url.Scheme;
+				return null;
 			}
+			var virtualPathData = new VirtualPathData(this, virtualPath);
+			virtualPathData.DataTokens.OverrideMergeWith(DataTokens);
+
+			return virtualPathData;
+		}
+
+		private string CreateUrlWhenMatch(string defaultScheme, RouteValueDictionary contextValues, RouteValueDictionary defaultValues, RouteValueDictionary values)
+		{
+			if (values == null)
+			{
+				values = new RouteValueDictionary();
+			}
+			if(defaultValues == null)
+			{
+				defaultValues = new RouteValueDictionary();
+			}
+
 			HashSet<string> usedParametersNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			var hostSegments = GetFullFilledSegments(parsedRoute.HostSegments, contextValues, defaultValues, usedParametersNames, true).ToArray();
 			var pathSegments = GetFullFilledSegments(parsedRoute.PathSegments, contextValues, defaultValues, usedParametersNames).ToArray();
-			bool hasUnreachableParameter = hostSegments.Concat(pathSegments).Any(x=> IsVariableSegment(x));
-			if(hasUnreachableParameter)
+			bool hasUnreachableParameter = hostSegments.Concat(pathSegments).Any(x => IsVariableSegment(x));
+			if (hasUnreachableParameter)
 			{
 				return null;
 			}
 			string host = string.Join(".", hostSegments);
 			string path = string.Join("/", pathSegments);
-			
+
 			var parametersToUseInQuerystring = new HashSet<string>(values.Keys, StringComparer.OrdinalIgnoreCase);
 			parametersToUseInQuerystring.ExceptWith(usedParametersNames);
-			string queryString= GetQueryForUnusedParameters(values, parametersToUseInQuerystring);
+			string queryString = GetQueryForUnusedParameters(values, parametersToUseInQuerystring);
 
-			string virtualPath = parsedRoute.HostSegments.Any()
-			                     	? (new UriBuilder {Scheme = defaultScheme, Host = host, Path = path, Query = queryString.TrimStart('?')}).ToString()
-			                     	: path + queryString;
+			return parsedRoute.HostSegments.Any()
+														? (new UriBuilder { Scheme = defaultScheme, Host = host, Path = path, Query = queryString.TrimStart('?') }).ToString()
+														: path + queryString;
 
-			var virtualPathData = new VirtualPathData(this, virtualPath);
-			virtualPathData.DataTokens.OverrideMergeWith(DataTokens);
-
-			return virtualPathData;
 		}
 
 		private string GetQueryForUnusedParameters(RouteValueDictionary values, HashSet<string> parametersToUseInQuerystring)
