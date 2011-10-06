@@ -235,12 +235,12 @@ namespace HunabKu.MvcAbsoluteRouter
 
 			var usedParametersNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			string[] hostFilledSegments;
-			if(!GetFullFilledSegments(HostSegments, contextValues, defaultValues, usedParametersNames, out hostFilledSegments, true))
+			if(!GetFullFilledSegments(hostSegments, contextValues, defaultValues, usedParametersNames, out hostFilledSegments, true))
 			{
 				return null;
 			}
 			string[] pathFilledSegments;
-			if (!GetFullFilledSegments(PathSegments, contextValues, defaultValues, usedParametersNames, out pathFilledSegments))
+			if (!GetFullFilledSegments(pathSegments, contextValues, defaultValues, usedParametersNames, out pathFilledSegments))
 			{
 				return null;
 			}
@@ -279,9 +279,14 @@ namespace HunabKu.MvcAbsoluteRouter
 			return string.Empty;
 		}
 
-		private bool GetFullFilledSegments(IEnumerable<string> patternSegments, RouteValueDictionary values, RouteValueDictionary defaults,
+		private bool GetFullFilledSegments(IList<string> patternSegments, RouteValueDictionary values, RouteValueDictionary defaults,
 		                                                  HashSet<string> usedParametersNames, out string[] filledSegments, bool forceUsageOfDefaultWhereNoValueAvailable = false)
 		{
+			if(patternSegments.Count == 0)
+			{
+				filledSegments = new string[0];
+				return true;
+			}
 			List<string> result = new List<string>(50);
 			var pendingSubstitutions = new List<string>(10);
 			var availableValues = new RouteValueDictionary(values);
