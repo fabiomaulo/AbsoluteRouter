@@ -309,8 +309,7 @@ namespace HunabKu.MvcAbsoluteRouter
 							pendingSubstitutions.Clear();
 						}
 						usedParametersNames.Add(variableName);
-						string actualValueString = Convert.ToString(actualValue, CultureInfo.InvariantCulture);
-						result.Add(actualValueString);
+						result.Add(Convert.ToString(actualValue, CultureInfo.InvariantCulture));
 					}
 					else if (defaults.TryGetValue(variableName, out actualValue))
 					{
