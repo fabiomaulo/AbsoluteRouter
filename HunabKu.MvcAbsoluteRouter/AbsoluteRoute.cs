@@ -121,6 +121,18 @@ namespace HunabKu.MvcAbsoluteRouter
 			}
 		}
 
+		private static void MergeDictionary(RouteValueDictionary source, RouteValueDictionary destination)
+		{
+			if (source == null)
+			{
+				return;
+			}
+			foreach (var value in source.Where(x=> !destination.ContainsKey(x.Key)))
+			{
+				destination[value.Key] = value.Value;
+			}
+		}
+
 		public override VirtualPathData GetVirtualPath(RequestContext requestContext, RouteValueDictionary values)
 		{
 			var contextValues = new RouteValueDictionary(requestContext.RouteData.Values);
@@ -155,7 +167,7 @@ namespace HunabKu.MvcAbsoluteRouter
 			var availableValues = new RouteValueDictionary(values);
 			if (forceUsageOfDefaultWhereNoValueAvailable)
 			{
-				OverrideMergeDictionary(defaults, availableValues);
+				MergeDictionary(defaults, availableValues);
 			}
 			foreach (var segment in patternSegments)
 			{
