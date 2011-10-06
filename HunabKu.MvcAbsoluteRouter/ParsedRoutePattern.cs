@@ -234,10 +234,13 @@ namespace HunabKu.MvcAbsoluteRouter
 			}
 
 			var usedParametersNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			string[] hostFilledSegments = GetFullFilledSegments(HostSegments, contextValues, defaultValues, usedParametersNames, true).ToArray();
-			string[] pathFilledSegments = GetFullFilledSegments(PathSegments, contextValues, defaultValues, usedParametersNames).ToArray();
-			bool hasUnreachableParameter = hostFilledSegments.Concat(pathFilledSegments).Any(x => IsVariableSegment(x));
-			if (hasUnreachableParameter)
+			string[] hostFilledSegments;
+			if(!GetFullFilledSegments(HostSegments, contextValues, defaultValues, usedParametersNames, out hostFilledSegments, true))
+			{
+				return null;
+			}
+			string[] pathFilledSegments;
+			if (!GetFullFilledSegments(PathSegments, contextValues, defaultValues, usedParametersNames, out pathFilledSegments))
 			{
 				return null;
 			}
@@ -276,8 +279,8 @@ namespace HunabKu.MvcAbsoluteRouter
 			return string.Empty;
 		}
 
-		private IEnumerable<string> GetFullFilledSegments(IEnumerable<string> patternSegments, RouteValueDictionary values, RouteValueDictionary defaults,
-		                                                  HashSet<string> usedParametersNames, bool forceUsageOfDefaultWhereNoValueAvailable = false)
+		private bool GetFullFilledSegments(IEnumerable<string> patternSegments, RouteValueDictionary values, RouteValueDictionary defaults,
+		                                                  HashSet<string> usedParametersNames, out string[] filledSegments, bool forceUsageOfDefaultWhereNoValueAvailable = false)
 		{
 			List<string> result = new List<string>(50);
 			var pendingSubstitutions = new List<string>(10);
@@ -315,7 +318,8 @@ namespace HunabKu.MvcAbsoluteRouter
 					}
 					else
 					{
-						result.Add(segment);
+						filledSegments= new string[0];
+						return false;
 					}
 				}
 				else
@@ -323,7 +327,8 @@ namespace HunabKu.MvcAbsoluteRouter
 					result.Add(segment);
 				}
 			}
-			return result;
+			filledSegments = result.ToArray();
+			return true;
 		}
 	}
 }
