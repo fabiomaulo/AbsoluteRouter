@@ -9,12 +9,14 @@ namespace HunabKu.MvcAbsoluteRouter
 {
 	public class ParsedRoutePattern
 	{
-		private static readonly string SchemeDelimiter = Uri.SchemeDelimiter;
 		private const char PathDelimiter = '/';
 		private const char HostSeparator = '.';
 		private const char PortDelimiter = ':';
 		private const char QueryDelimiter = '?';
 		private const char QuerySeparator = '&';
+		private static readonly string SchemeDelimiter = Uri.SchemeDelimiter;
+		private IList<string> hostSegments;
+		private IList<string> pathSegments;
 
 		private ParsedRoutePattern(string pattern)
 		{
@@ -39,13 +41,12 @@ namespace HunabKu.MvcAbsoluteRouter
 		public string QueryPattern { get; private set; }
 
 		public string SchemeSegment { get; private set; }
-		private IList<string> hostSegments;
+
 		public IEnumerable<string> HostSegments
 		{
 			get { return hostSegments; }
 		}
 
-		private IList<string> pathSegments;
 		public IEnumerable<string> PathSegments
 		{
 			get { return pathSegments; }
@@ -78,7 +79,7 @@ namespace HunabKu.MvcAbsoluteRouter
 			int indexOfPortDelimiter = hostAndPort.IndexOf(PortDelimiter);
 			HostPattern = indexOfPortDelimiter > 0 ? hostAndPort.Substring(0, indexOfPortDelimiter) : hostAndPort;
 
-			string pathAndQuery = !hasPath ? string.Empty: hasDns ? urlCleanedFromScheme.Substring(indexOfFirstSlash + 1) : urlCleanedFromScheme;
+			string pathAndQuery = !hasPath ? string.Empty : hasDns ? urlCleanedFromScheme.Substring(indexOfFirstSlash + 1) : urlCleanedFromScheme;
 			int indexOfQueryStringStart = pathAndQuery.IndexOf(QueryDelimiter);
 			PathPattern = indexOfQueryStringStart > 0 ? pathAndQuery.Substring(0, indexOfQueryStringStart) : pathAndQuery;
 			QueryPattern = indexOfQueryStringStart > 0 ? pathAndQuery.Substring(indexOfQueryStringStart + 1) : string.Empty;
@@ -110,13 +111,13 @@ namespace HunabKu.MvcAbsoluteRouter
 			{
 				return null;
 			}
-			var parsedUrl = Parse(url.ToString());
+			ParsedRoutePattern parsedUrl = Parse(url.ToString());
 			RouteValueDictionary values = defaults != null ? new RouteValueDictionary(defaults) : new RouteValueDictionary();
 
 			// check Scheme
 			if (IsVariableSegment(SchemeSegment))
 			{
-				var variableName = GetVariableName(SchemeSegment);
+				string variableName = GetVariableName(SchemeSegment);
 				values[variableName] = parsedUrl.SchemeSegment;
 			}
 			else if (!parsedUrl.SchemeSegment.Equals(SchemeSegment, StringComparison.InvariantCultureIgnoreCase) && !"".Equals(SchemeSegment))
@@ -125,7 +126,7 @@ namespace HunabKu.MvcAbsoluteRouter
 			}
 
 			// check Host
-			if (!SegmentsMatchs(hostSegments, parsedUrl.hostSegments, values, HostSeparator,true) && !"".Equals(HostPattern))
+			if (!SegmentsMatchs(hostSegments, parsedUrl.hostSegments, values, HostSeparator, true) && !"".Equals(HostPattern))
 			{
 				return null;
 			}
@@ -140,7 +141,7 @@ namespace HunabKu.MvcAbsoluteRouter
 
 		private bool SegmentsMatchs(IList<string> segments, IList<string> segmentesValues, RouteValueDictionary values, char segmentsSeparator, bool haveToMatchSegmentsCount = false)
 		{
-			var collectedSegments = 0;
+			int collectedSegments = 0;
 			for (int i = 0; i < segments.Count; i++)
 			{
 				bool segmenIsAVariable = IsVariableSegment(segments[i]);
@@ -173,7 +174,7 @@ namespace HunabKu.MvcAbsoluteRouter
 				object matchSegment;
 				if (segmentesValues.Count <= i)
 				{
-					if(!segmenIsAVariable)
+					if (!segmenIsAVariable)
 					{
 						return false;
 					}
@@ -214,7 +215,7 @@ namespace HunabKu.MvcAbsoluteRouter
 		private string GetVariableName(string urlSegment)
 		{
 			string variableName = urlSegment.Trim('{', '}');
-			if(variableName.StartsWith("*"))
+			if (variableName.StartsWith("*"))
 			{
 				variableName = variableName.Substring(1);
 			}
@@ -232,9 +233,9 @@ namespace HunabKu.MvcAbsoluteRouter
 				defaultValues = new RouteValueDictionary();
 			}
 
-			HashSet<string> usedParametersNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-			var hostFilledSegments = GetFullFilledSegments(HostSegments, contextValues, defaultValues, usedParametersNames, true).ToArray();
-			var pathFilledSegments = GetFullFilledSegments(PathSegments, contextValues, defaultValues, usedParametersNames).ToArray();
+			var usedParametersNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			string[] hostFilledSegments = GetFullFilledSegments(HostSegments, contextValues, defaultValues, usedParametersNames, true).ToArray();
+			string[] pathFilledSegments = GetFullFilledSegments(PathSegments, contextValues, defaultValues, usedParametersNames).ToArray();
 			bool hasUnreachableParameter = hostFilledSegments.Concat(pathFilledSegments).Any(x => IsVariableSegment(x));
 			if (hasUnreachableParameter)
 			{
@@ -248,9 +249,8 @@ namespace HunabKu.MvcAbsoluteRouter
 			string queryString = GetQueryForUnusedParameters(values, parametersToUseInQuerystring);
 
 			return HostSegments.Any()
-														? (new UriBuilder { Scheme = defaultScheme, Host = host, Path = path, Query = queryString.TrimStart('?') }).ToString()
-														: path + queryString;
-
+			       	? (new UriBuilder {Scheme = defaultScheme, Host = host, Path = path, Query = queryString.TrimStart('?')}).ToString()
+			       	: path + queryString;
 		}
 
 		private string GetQueryForUnusedParameters(RouteValueDictionary values, HashSet<string> parametersToUseInQuerystring)
@@ -276,33 +276,34 @@ namespace HunabKu.MvcAbsoluteRouter
 			return string.Empty;
 		}
 
-		private IEnumerable<string> GetFullFilledSegments(IEnumerable<string> patternSegments, RouteValueDictionary values, RouteValueDictionary defaults, HashSet<string> usedParametersNames, bool forceUsageOfDefaultWhereNoValueAvailable = false)
+		private IEnumerable<string> GetFullFilledSegments(IEnumerable<string> patternSegments, RouteValueDictionary values, RouteValueDictionary defaults,
+		                                                  HashSet<string> usedParametersNames, bool forceUsageOfDefaultWhereNoValueAvailable = false)
 		{
-			List<string> pendingSubstitutions = new List<string>(10);
+			var pendingSubstitutions = new List<string>(10);
 			var availableValues = new RouteValueDictionary(values);
 			if (forceUsageOfDefaultWhereNoValueAvailable)
 			{
 				availableValues.MergeWith(defaults);
 			}
-			foreach (var segment in patternSegments)
+			foreach (string segment in patternSegments)
 			{
 				if (IsVariableSegment(segment))
 				{
 					object actualValue;
-					var variableName = GetVariableName(segment);
+					string variableName = GetVariableName(segment);
 					if (availableValues.TryGetValue(variableName, out actualValue))
 					{
 						if (pendingSubstitutions.Count > 0)
 						{
 							// return pending segments with defaults
-							foreach (var pendingSubstitution in pendingSubstitutions)
+							foreach (string pendingSubstitution in pendingSubstitutions)
 							{
 								yield return pendingSubstitution;
 							}
 							pendingSubstitutions.Clear();
 						}
 						usedParametersNames.Add(variableName);
-						var actualValueString = Convert.ToString(actualValue, CultureInfo.InvariantCulture);
+						string actualValueString = Convert.ToString(actualValue, CultureInfo.InvariantCulture);
 						yield return actualValueString;
 					}
 					else if (defaults.TryGetValue(variableName, out actualValue))

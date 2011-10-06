@@ -10,13 +10,14 @@ namespace HunabKu.MvcAbsoluteRouter
 {
 	public class AbsoluteRoute : RouteBase
 	{
-		private string urlPattern;
-		private ParsedRoutePattern parsedRoute;
 		private RouteValueDictionary constraints;
-		private IDictionary<string, Func<string, bool>> constraintsMatchers;
 		private IDictionary<string, Regex> constraintsExpressions;
+		private IDictionary<string, Func<string, bool>> constraintsMatchers;
+		private ParsedRoutePattern parsedRoute;
+		private string urlPattern;
 
-		public AbsoluteRoute(string urlPattern, RouteValueDictionary defaults = null, RouteValueDictionary constraints = null, RouteValueDictionary dataTokens = null, IRouteHandler routeHandler = null)
+		public AbsoluteRoute(string urlPattern, RouteValueDictionary defaults = null, RouteValueDictionary constraints = null, RouteValueDictionary dataTokens = null,
+		                     IRouteHandler routeHandler = null)
 		{
 			UrlPattern = urlPattern;
 			Defaults = defaults;
@@ -35,30 +36,6 @@ namespace HunabKu.MvcAbsoluteRouter
 			}
 		}
 
-		private void CreateConstraintsMatchers()
-		{
-			if(constraints == null)
-			{
-				constraintsMatchers = null;
-				constraintsExpressions= null;
-				return;
-			}
-			constraintsMatchers = new Dictionary<string, Func<string, bool>>(constraints.Count);
-			constraintsExpressions = new Dictionary<string, Regex>(constraints.Count);
-			foreach (var constraint in constraints)
-			{
-				var parameterName = constraint.Key;
-				var constraintsRule = constraint.Value as string;
-				if (constraintsRule == null)
-				{
-					throw new InvalidOperationException(string.Format("The constraint entry '{0}' on the route with URL pattern '{1}' must have a string value.", parameterName, UrlPattern));
-				}
-				string constraintsRegEx = "^(" + constraintsRule + ")$";
-				constraintsExpressions[parameterName] = new Regex(constraintsRegEx, RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
-				constraintsMatchers[parameterName] = parameterValue => constraintsExpressions[parameterName].IsMatch(parameterValue);
-			}
-		}
-
 		public RouteValueDictionary DataTokens { get; set; }
 
 		public RouteValueDictionary Defaults { get; set; }
@@ -72,6 +49,30 @@ namespace HunabKu.MvcAbsoluteRouter
 			{
 				parsedRoute = ParsedRoutePattern.Parse(value);
 				urlPattern = value;
+			}
+		}
+
+		private void CreateConstraintsMatchers()
+		{
+			if (constraints == null)
+			{
+				constraintsMatchers = null;
+				constraintsExpressions = null;
+				return;
+			}
+			constraintsMatchers = new Dictionary<string, Func<string, bool>>(constraints.Count);
+			constraintsExpressions = new Dictionary<string, Regex>(constraints.Count);
+			foreach (var constraint in constraints)
+			{
+				string parameterName = constraint.Key;
+				var constraintsRule = constraint.Value as string;
+				if (constraintsRule == null)
+				{
+					throw new InvalidOperationException(string.Format("The constraint entry '{0}' on the route with URL pattern '{1}' must have a string value.", parameterName, UrlPattern));
+				}
+				string constraintsRegEx = "^(" + constraintsRule + ")$";
+				constraintsExpressions[parameterName] = new Regex(constraintsRegEx, RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+				constraintsMatchers[parameterName] = parameterValue => constraintsExpressions[parameterName].IsMatch(parameterValue);
 			}
 		}
 
@@ -118,9 +119,9 @@ namespace HunabKu.MvcAbsoluteRouter
 				return null;
 			}
 
-			var requestUrl = requestContext.HttpContext.Request.Url;
+			Uri requestUrl = requestContext.HttpContext.Request.Url;
 			string virtualPath = parsedRoute.CreateUrlWhenMatch(requestUrl != null ? requestUrl.Scheme : string.Empty, contextValues, Defaults, values);
-			if(virtualPath == null)
+			if (virtualPath == null)
 			{
 				return null;
 			}
