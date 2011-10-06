@@ -235,12 +235,12 @@ namespace HunabKu.MvcAbsoluteRouter
 
 			var usedParametersNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			string[] hostFilledSegments;
-			if(!GetFullFilledSegments(hostSegments, contextValues, defaultValues, usedParametersNames, out hostFilledSegments, true))
+			if(!WhenMatchGetFullFilledSegments(hostSegments, contextValues, defaultValues, usedParametersNames, out hostFilledSegments, true))
 			{
 				return null;
 			}
 			string[] pathFilledSegments;
-			if (!GetFullFilledSegments(pathSegments, contextValues, defaultValues, usedParametersNames, out pathFilledSegments))
+			if (!WhenMatchGetFullFilledSegments(pathSegments, contextValues, defaultValues, usedParametersNames, out pathFilledSegments))
 			{
 				return null;
 			}
@@ -279,7 +279,7 @@ namespace HunabKu.MvcAbsoluteRouter
 			return string.Empty;
 		}
 
-		private bool GetFullFilledSegments(IList<string> patternSegments, RouteValueDictionary values, RouteValueDictionary defaults,
+		private bool WhenMatchGetFullFilledSegments(IList<string> patternSegments, RouteValueDictionary values, RouteValueDictionary defaults,
 		                                                  HashSet<string> usedParametersNames, out string[] filledSegments, bool forceUsageOfDefaultWhereNoValueAvailable = false)
 		{
 			if(patternSegments.Count == 0)
