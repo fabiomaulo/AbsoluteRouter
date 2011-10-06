@@ -279,6 +279,7 @@ namespace HunabKu.MvcAbsoluteRouter
 		private IEnumerable<string> GetFullFilledSegments(IEnumerable<string> patternSegments, RouteValueDictionary values, RouteValueDictionary defaults,
 		                                                  HashSet<string> usedParametersNames, bool forceUsageOfDefaultWhereNoValueAvailable = false)
 		{
+			List<string> result = new List<string>(50);
 			var pendingSubstitutions = new List<string>(10);
 			var availableValues = new RouteValueDictionary(values);
 			if (forceUsageOfDefaultWhereNoValueAvailable)
@@ -298,13 +299,13 @@ namespace HunabKu.MvcAbsoluteRouter
 							// return pending segments with defaults
 							foreach (string pendingSubstitution in pendingSubstitutions)
 							{
-								yield return pendingSubstitution;
+								result.Add(pendingSubstitution);
 							}
 							pendingSubstitutions.Clear();
 						}
 						usedParametersNames.Add(variableName);
 						string actualValueString = Convert.ToString(actualValue, CultureInfo.InvariantCulture);
-						yield return actualValueString;
+						result.Add(actualValueString);
 					}
 					else if (defaults.TryGetValue(variableName, out actualValue))
 					{
@@ -314,14 +315,15 @@ namespace HunabKu.MvcAbsoluteRouter
 					}
 					else
 					{
-						yield return segment;
+						result.Add(segment);
 					}
 				}
 				else
 				{
-					yield return segment;
+					result.Add(segment);
 				}
 			}
+			return result;
 		}
 	}
 }
