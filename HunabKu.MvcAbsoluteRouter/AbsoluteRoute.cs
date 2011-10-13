@@ -66,13 +66,20 @@ namespace HunabKu.MvcAbsoluteRouter
 			{
 				string parameterName = constraint.Key;
 				var constraintsRule = constraint.Value as string;
-				if (constraintsRule == null)
+				if (constraintsRule != null)
 				{
-					throw new InvalidOperationException(string.Format("The constraint entry '{0}' on the route with URL pattern '{1}' must have a string value.", parameterName, UrlPattern));
+					string constraintsRegEx = "^(" + constraintsRule + ")$";
+					constraintsExpressions[parameterName] = new Regex(constraintsRegEx, RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+					constraintsMatchers[parameterName] = parameterValue => constraintsExpressions[parameterName].IsMatch(parameterValue);
+					continue;
 				}
-				string constraintsRegEx = "^(" + constraintsRule + ")$";
-				constraintsExpressions[parameterName] = new Regex(constraintsRegEx, RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Compiled);
-				constraintsMatchers[parameterName] = parameterValue => constraintsExpressions[parameterName].IsMatch(parameterValue);
+				var matcher = constraint.Value as Matchs;
+				if(matcher != null)
+				{
+					constraintsMatchers[parameterName] = matcher.Match;
+					continue;
+				}
+				throw new InvalidOperationException(string.Format("The constraint entry '{0}' on the route with URL pattern '{1}' must have a string value (as Regex) or have to be a MvcAbsoluteRouter.Matchs.", parameterName, UrlPattern));
 			}
 		}
 
@@ -117,6 +124,7 @@ namespace HunabKu.MvcAbsoluteRouter
 			var contextValues = new RouteValueDictionary(requestContext.RouteData.Values);
 			if (parsedRoute.HasHostPattern && requestUrl != null)
 			{
+				// create a fake patterm just to extract variables values from host
 				var pattern = (string.IsNullOrEmpty(defaultScheme) ? "http://" : defaultScheme+"://") + parsedRoute.HostPattern;
 				var parsedHostRoute = ParsedRoutePattern.Parse(pattern);
 				contextValues.MergeWith(parsedHostRoute.Match(requestUrl, null));

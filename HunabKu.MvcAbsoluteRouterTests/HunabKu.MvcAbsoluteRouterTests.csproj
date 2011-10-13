@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbsoluteRouteTests\ConstructorsTests.cs" />
+    <Compile Include="AbsoluteRouteTests\LambdaConstraintsTests.cs" />
     <Compile Include="AbsoluteRouteTests\GetRouteDataBaseTests.cs" />
     <Compile Include="AbsoluteRouteTests\VirtualPathTests\CreationOfHostTests.cs" />
     <Compile Include="AbsoluteRouteTests\VirtualPathTests\GetVirtualPathTests.cs" />
