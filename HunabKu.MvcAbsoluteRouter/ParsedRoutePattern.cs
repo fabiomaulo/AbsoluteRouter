@@ -87,11 +87,23 @@ namespace HunabKu.MvcAbsoluteRouter
 			string pathAndQuery = !hasPath ? string.Empty : hasDns ? urlCleanedFromScheme.Substring(indexOfFirstSlash + 1) : urlCleanedFromScheme;
 			int indexOfQueryStringStart = pathAndQuery.IndexOf(QueryDelimiter);
 			PathPattern = indexOfQueryStringStart > 0 ? pathAndQuery.Substring(0, indexOfQueryStringStart) : pathAndQuery;
-			if(PathPattern.Length > 0 && PathPattern[PathPattern.Length -1]==PathDelimiter)
-			{
-				PathPattern = PathPattern.Substring(0, PathPattern.Length - 1);
-			}
+			PathPattern = Reduce(PathPattern, PathDelimiter);
+
 			QueryPattern = indexOfQueryStringStart > 0 ? pathAndQuery.Substring(indexOfQueryStringStart + 1) : string.Empty;
+		}
+
+		private string Reduce(string pattern, char delimiter)
+		{
+			if (string.IsNullOrEmpty(pattern))
+			{
+				return pattern;
+			}
+			var patternLength = pattern.Length;
+			if (pattern[patternLength -1] == delimiter)
+			{
+				return pattern.Substring(0, patternLength -1);
+			}
+			return pattern;
 		}
 
 		private void ExtractSegments()
