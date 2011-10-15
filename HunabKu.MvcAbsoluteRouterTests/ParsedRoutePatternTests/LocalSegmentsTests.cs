@@ -61,6 +61,30 @@ namespace HunabKu.MvcAbsoluteRouterTests.ParsedRoutePatternTests
 			var parsed = ParsedRoutePattern.Parse("{company}.com");
 			IEnumerable<string> actual = parsed.PathSegments;
 			actual.Should().Be.Empty();
-		} 
+		}
+
+		[Test]
+		public void WhenPatternEndWithSlashThenDoesNotIncludeItInSegments()
+		{
+			var parsed = ParsedRoutePattern.Parse("{controller}/Index/");
+			IEnumerable<string> actual = parsed.PathSegments;
+			actual.Should().Have.SameSequenceAs("{controller}", "Index");
+		}
+
+		[Test]
+		public void WhenPatternIsJustSlashThenDoesNotIncludeItInSegments()
+		{
+			var parsed = ParsedRoutePattern.Parse("/");
+			IEnumerable<string> actual = parsed.PathSegments;
+			actual.Should().Be.Empty();
+		}
+
+		[Test]
+		public void WhenPatternIsJustDomainWithSlashThenEmptyLocalPattern()
+		{
+			var parsed = ParsedRoutePattern.Parse("{company}.com/");
+			IEnumerable<string> actual = parsed.PathSegments;
+			actual.Should().Be.Empty();
+		}
 	}
 }

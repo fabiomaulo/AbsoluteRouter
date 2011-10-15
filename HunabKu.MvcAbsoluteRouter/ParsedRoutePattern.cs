@@ -87,6 +87,10 @@ namespace HunabKu.MvcAbsoluteRouter
 			string pathAndQuery = !hasPath ? string.Empty : hasDns ? urlCleanedFromScheme.Substring(indexOfFirstSlash + 1) : urlCleanedFromScheme;
 			int indexOfQueryStringStart = pathAndQuery.IndexOf(QueryDelimiter);
 			PathPattern = indexOfQueryStringStart > 0 ? pathAndQuery.Substring(0, indexOfQueryStringStart) : pathAndQuery;
+			if(PathPattern.Length > 0 && PathPattern[PathPattern.Length -1]==PathDelimiter)
+			{
+				PathPattern = PathPattern.Substring(0, PathPattern.Length - 1);
+			}
 			QueryPattern = indexOfQueryStringStart > 0 ? pathAndQuery.Substring(indexOfQueryStringStart + 1) : string.Empty;
 		}
 
