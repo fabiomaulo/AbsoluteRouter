@@ -136,12 +136,12 @@ namespace HunabKu.MvcAbsoluteRouter
 				return null;
 			}
 
-			string virtualPath = parsedRoute.CreateUrlWhenMatch(defaultScheme, contextValues, Defaults, values);
-			if (virtualPath == null)
+			var matchUrl = parsedRoute.CreateUrlWhenMatch(defaultScheme, contextValues, Defaults, values);
+			if (matchUrl == null || !MatchConstraints(matchUrl.UsedValues))
 			{
 				return null;
 			}
-			var virtualPathData = new VirtualPathData(this, virtualPath);
+			var virtualPathData = new VirtualPathData(this, matchUrl.Url);
 			virtualPathData.DataTokens.OverrideMergeWith(DataTokens);
 
 			return virtualPathData;

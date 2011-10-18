@@ -18,5 +18,16 @@ namespace HunabKu.MvcAbsoluteRouterTests.AbsoluteRouteTests.VirtualPathTests
 			var virtualPath = route.GetVirtualPath(requestContext, new RouteValueDictionary(new { controller = "pizza", id = 1 }));
 			virtualPath.Should().Be.Null();
 		}
+
+		[Test]
+		public void WhenNoVariableValeAndNewsValuesAreNotEqualsThenNull()
+		{
+			var context = "http://acme.com".AsUri().ToHttpContext();
+			var requestContext = new RequestContext(context, new RouteData());
+
+			var route = new AbsoluteRoute("SomeController/{action}/{id}", new RouteValueDictionary(new { controller = "SomeController", action="someaction", id = 1 }));
+			var virtualPath = route.GetVirtualPath(requestContext, new RouteValueDictionary(new { controller = "pizza", id = 1 }));
+			virtualPath.Should().Be.Null();
+		}
 	}
 }

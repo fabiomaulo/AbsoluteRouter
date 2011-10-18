@@ -243,7 +243,7 @@ namespace HunabKu.MvcAbsoluteRouter
 			return variableName;
 		}
 
-		public string CreateUrlWhenMatch(string defaultScheme, RouteValueDictionary contextValues, RouteValueDictionary defaultValues, RouteValueDictionary values)
+		public MatchUrl CreateUrlWhenMatch(string defaultScheme, RouteValueDictionary contextValues, RouteValueDictionary defaultValues, RouteValueDictionary values)
 		{
 			if (values == null)
 			{
@@ -254,7 +254,7 @@ namespace HunabKu.MvcAbsoluteRouter
 				defaultValues = new RouteValueDictionary();
 			}
 
-			var usedParametersNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			var usedParametersNames = new RouteValueDictionary();
 			string[] hostFilledSegments;
 			if(!WhenMatchGetFullFilledSegments(hostSegments, contextValues, defaultValues, usedParametersNames, out hostFilledSegments, true))
 			{
@@ -265,16 +265,35 @@ namespace HunabKu.MvcAbsoluteRouter
 			{
 				return null;
 			}
+			var unusedValues = new RouteValueDictionary(values.Where(x => !usedParametersNames.ContainsKey(x.Key)).ToDictionary(k => k.Key, v => v.Value));
+			var unusedDefaults = new RouteValueDictionary(defaultValues.Where(x => !usedParametersNames.ContainsKey(x.Key)).ToDictionary(k => k.Key, v => v.Value));
+			foreach (var unusedValue in unusedValues)
+			{
+				object comparisonValue;
+				if (unusedDefaults.TryGetValue(unusedValue.Key, out comparisonValue))
+				{
+					if (!RoutePartsEqual(unusedValue.Value, comparisonValue))
+					{
+						return null;
+					}
+					usedParametersNames.Add(unusedValue.Key, comparisonValue);
+				}
+			}
+
 			string host = string.Join(HostSeparator.ToString(), hostFilledSegments);
 			string path = string.Join(PathDelimiter.ToString(), pathFilledSegments);
 
 			var parametersToUseInQuerystring = new HashSet<string>(values.Keys, StringComparer.OrdinalIgnoreCase);
-			parametersToUseInQuerystring.ExceptWith(usedParametersNames);
+			parametersToUseInQuerystring.ExceptWith(usedParametersNames.Keys);
 			string queryString = GetQueryForUnusedParameters(values, parametersToUseInQuerystring);
-
-			return HostSegments.Any()
-			       	? (new UriBuilder {Scheme = defaultScheme, Host = host, Path = path, Query = queryString.TrimStart('?')}).ToString()
-			       	: path + queryString;
+			var matchUrl = new MatchUrl
+			               {
+			               	Url = HostSegments.Any()
+			               	      	? (new UriBuilder {Scheme = defaultScheme, Host = host, Path = path, Query = queryString.TrimStart('?')}).ToString()
+			               	      	: path + queryString,
+											UsedValues = new RouteValueDictionary(usedParametersNames)
+			               };
+			return matchUrl;
 		}
 
 		private string GetQueryForUnusedParameters(RouteValueDictionary values, HashSet<string> parametersToUseInQuerystring)
@@ -301,11 +320,11 @@ namespace HunabKu.MvcAbsoluteRouter
 		}
 
 		private bool WhenMatchGetFullFilledSegments(IList<string> patternSegments, RouteValueDictionary values, RouteValueDictionary defaults,
-		                                                  HashSet<string> usedParametersNames, out string[] filledSegments, bool forceUsageOfDefaultWhereNoValueAvailable = false)
+																											RouteValueDictionary usedParametersNames, out string[] filledSegments, bool forceUsageOfDefaultWhereNoValueAvailable = false)
 		{
-			if(patternSegments.Count == 0)
+			filledSegments = new string[0];
+			if (patternSegments.Count == 0)
 			{
-				filledSegments = new string[0];
 				return true;
 			}
 			List<string> result = new List<string>(50);
@@ -329,19 +348,18 @@ namespace HunabKu.MvcAbsoluteRouter
 							result.AddRange(pendingSubstitutions);
 							pendingSubstitutions.Clear();
 						}
-						usedParametersNames.Add(variableName);
+						usedParametersNames.Add(variableName, actualValue);
 						result.Add(Convert.ToString(actualValue, CultureInfo.InvariantCulture));
 					}
 					else if (defaults.TryGetValue(variableName, out actualValue))
 					{
-						usedParametersNames.Add(variableName);
+						usedParametersNames.Add(variableName, actualValue);
 						// enlist the availability of a default
 						pendingSubstitutions.Add(Convert.ToString(actualValue, CultureInfo.InvariantCulture));
 					}
 					else
 					{
 						// the parameter is required but no value is available: the pattern does not match
-						filledSegments= new string[0];
 						return false;
 					}
 				}
@@ -353,5 +371,29 @@ namespace HunabKu.MvcAbsoluteRouter
 			filledSegments = result.ToArray();
 			return true;
 		}
+
+		private bool RoutePartsEqual(object value1, object value2)
+		{
+			var value1String = value1 as string;
+			var value2String = value2 as string;
+			if (value1String != null && value2String != null)
+			{
+				// For strings do a case-insensitive comparison
+				return String.Equals(value1String, value2String, StringComparison.OrdinalIgnoreCase);
+			}
+			if (value1 != null && value2 != null)
+			{
+				// Explicitly call .Equals() in case it is overridden in the type
+				return value1.Equals(value2);
+			}
+			// At least one of them is null. Return true if they both are
+			return value1 == value2;
+		} 
+	}
+
+	public class MatchUrl
+	{
+		public string Url { get; set; }
+		public RouteValueDictionary UsedValues { get; set; }
 	}
 }
