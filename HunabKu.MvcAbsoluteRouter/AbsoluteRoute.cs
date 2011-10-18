@@ -129,13 +129,6 @@ namespace HunabKu.MvcAbsoluteRouter
 				var parsedHostRoute = ParsedRoutePattern.Parse(pattern);
 				contextValues.MergeWith(parsedHostRoute.Match(requestUrl, null));
 			}
-			var earlyConstraints = new RouteValueDictionary(contextValues);
-			earlyConstraints.OverrideMergeWith(values);
-
-			if (!MatchConstraints(earlyConstraints))
-			{
-				return null;
-			}
 
 			var matchUrl = parsedRoute.CreateUrlWhenMatch(defaultScheme, values, Defaults, contextValues);
 			if (matchUrl == null || !MatchConstraints(matchUrl.UsedValues))
