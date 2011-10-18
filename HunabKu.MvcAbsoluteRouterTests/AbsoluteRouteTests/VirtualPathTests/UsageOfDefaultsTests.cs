@@ -72,5 +72,18 @@ namespace HunabKu.MvcAbsoluteRouterTests.AbsoluteRouteTests.VirtualPathTests
 			virtualPath.Route.Should().Be.SameInstanceAs(route);
 			virtualPath.VirtualPath.Should().Be("https://bubu.com/");
 		}
+
+		[Test]
+		public void WhenHasDefaultsAndValuesAndContextThenDoesNotUseContextForNotRequiredParameters()
+		{
+			// when has default and some values are explicitly defined then use defaults and values to create the URL
+			var context = "https://something.acme.com/Super/Action/1234".AsUri().ToHttpContext();
+			var requestContext = new RequestContext(context, new RouteData());
+
+			var route = new AbsoluteRoute("{subdomain}.acme.com/{controller}/{action}/{id}", defaults: new RouteValueDictionary(new { controller = "Home", action = "Index", id= string.Empty }));
+			var virtualPath = route.GetVirtualPath(requestContext, new RouteValueDictionary(new { controller = "Pizza" }));
+			virtualPath.Route.Should().Be.SameInstanceAs(route);
+			virtualPath.VirtualPath.Should().Be("https://something.acme.com/Pizza");
+		}
 	}
 }
