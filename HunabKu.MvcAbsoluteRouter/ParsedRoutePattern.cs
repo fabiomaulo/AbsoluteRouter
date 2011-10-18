@@ -256,12 +256,12 @@ namespace HunabKu.MvcAbsoluteRouter
 
 			var usedParametersNames = new RouteValueDictionary();
 			string[] hostFilledSegments;
-			if (!WhenMatchGetFullFilledSegments(hostSegments, contextValues, defaultValues, usedParametersNames, out hostFilledSegments, true))
+			if (!WhenMatchGetFullFilledSegments(hostSegments, values, defaultValues, contextValues, usedParametersNames, out hostFilledSegments, true))
 			{
 				return null;
 			}
 			string[] pathFilledSegments;
-			if (!WhenMatchGetFullFilledSegments(pathSegments, contextValues, defaultValues, usedParametersNames, out pathFilledSegments))
+			if (!WhenMatchGetFullFilledSegments(pathSegments, values, defaultValues, contextValues, usedParametersNames, out pathFilledSegments))
 			{
 				return null;
 			}
@@ -319,7 +319,7 @@ namespace HunabKu.MvcAbsoluteRouter
 			return string.Empty;
 		}
 
-		private bool WhenMatchGetFullFilledSegments(IList<string> patternSegments, RouteValueDictionary values, RouteValueDictionary defaults,
+		private bool WhenMatchGetFullFilledSegments(IList<string> patternSegments, RouteValueDictionary values, RouteValueDictionary defaults, RouteValueDictionary contextValues,
 																											RouteValueDictionary usedParametersNames, out string[] filledSegments, bool forceUsageOfDefaultWhereNoValueAvailable = false)
 		{
 			filledSegments = new string[0];
@@ -356,6 +356,18 @@ namespace HunabKu.MvcAbsoluteRouter
 						usedParametersNames.Add(variableName, actualValue);
 						// enlist the availability of a default
 						pendingSubstitutions.Add(Convert.ToString(actualValue, CultureInfo.InvariantCulture));
+					}
+					else if (contextValues.TryGetValue(variableName, out actualValue))
+					{
+						// when come here the parameter is required and has no default but we can take it from context
+						if (pendingSubstitutions.Count > 0)
+						{
+							// return pending segments with defaults
+							result.AddRange(pendingSubstitutions);
+							pendingSubstitutions.Clear();
+						}
+						usedParametersNames.Add(variableName, actualValue);
+						result.Add(Convert.ToString(actualValue, CultureInfo.InvariantCulture));
 					}
 					else
 					{
