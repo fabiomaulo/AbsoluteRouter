@@ -86,10 +86,10 @@ namespace HunabKu.MvcAbsoluteRouter
 
 			string pathAndQuery = !hasPath ? string.Empty : hasDns ? urlCleanedFromScheme.Substring(indexOfFirstSlash + 1) : urlCleanedFromScheme;
 			int indexOfQueryStringStart = pathAndQuery.IndexOf(QueryDelimiter);
-			PathPattern = indexOfQueryStringStart > 0 ? pathAndQuery.Substring(0, indexOfQueryStringStart) : pathAndQuery;
+			PathPattern = indexOfQueryStringStart >= 0 ? pathAndQuery.Substring(0, indexOfQueryStringStart) : pathAndQuery;
 			PathPattern = Reduce(PathPattern, PathDelimiter);
 
-			QueryPattern = indexOfQueryStringStart > 0 ? pathAndQuery.Substring(indexOfQueryStringStart + 1) : string.Empty;
+			QueryPattern = indexOfQueryStringStart >= 0 ? pathAndQuery.Substring(indexOfQueryStringStart + 1) : string.Empty;
 		}
 
 		private string Reduce(string pattern, char delimiter)
@@ -256,7 +256,7 @@ namespace HunabKu.MvcAbsoluteRouter
 
 			var usedParametersNames = new RouteValueDictionary();
 			string[] hostFilledSegments;
-			if(!WhenMatchGetFullFilledSegments(hostSegments, contextValues, defaultValues, usedParametersNames, out hostFilledSegments, true))
+			if (!WhenMatchGetFullFilledSegments(hostSegments, contextValues, defaultValues, usedParametersNames, out hostFilledSegments, true))
 			{
 				return null;
 			}

@@ -59,5 +59,15 @@ namespace HunabKu.MvcAbsoluteRouterTests.AbsoluteRouteTests
 			tokens["a"].Should().Be(1);
 			tokens["b"].Should().Be(2);
 		}
+
+		[Test]
+		public void WhenNoMatchWithQueryStringThenNull()
+		{
+			var route = new AbsoluteRoute("http://{*host}/{category}");
+			var context = "http://acme.com/?p=5".AsUri().ToHttpContext();
+			var routedata = route.GetRouteData(context);
+			routedata.Should().Be.Null();
+		}
+
 	}
 }
